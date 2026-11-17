@@ -40,7 +40,7 @@ def create_pdf(report_text):
     styles = getSampleStyleSheet()
     story = []
 
-    story.append(Paragraph("AI Medical Report Simplifier", styles["Title"]))
+    story.append(Paragraph("AI Powered Medical Document Intelligence System", styles["Title"]))
     story.append(Spacer(1, 12))
 
     for line in report_text.split("\n"):
@@ -61,7 +61,7 @@ def create_pdf(report_text):
 # -----------------------------
 # SIDEBAR
 # -----------------------------
-st.sidebar.title("🏥 Medical Report Simplifier")
+st.sidebar.title("🏥 AI Powered Medical Document Intelligence System")
 
 st.sidebar.markdown("""
 ### About Project
@@ -81,7 +81,7 @@ Mukesh
 # -----------------------------
 # MAIN UI
 # -----------------------------
-st.title("🏥 AI Medical Report Simplifier")
+st.title("AI-Powered Medical Document Intelligence System")
 
 st.info(
     "⚠️ Disclaimer: This AI-generated explanation is for educational purposes only. "
