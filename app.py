@@ -1,4 +1,3 @@
-
 import streamlit as st
 from pypdf import PdfReader
 import google.generativeai as genai
@@ -8,11 +7,7 @@ import re
 from io import BytesIO
 from datetime import date, datetime
 from xml.sax.saxutils import escape
-from reportlab.platypus import (
-    SimpleDocTemplate,
-    Paragraph,
-    Spacer
-)
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 
 
@@ -29,70 +24,229 @@ st.set_page_config(
 
 
 # ============================================================
-# CUSTOM CSS
+# PREMIUM NAVY + TEAL UI
 # ============================================================
 
 st.markdown("""
 <style>
-.main {
-    background-color: #ffffff;
+:root {
+    --navy: #102B46;
+    --navy-2: #183B56;
+    --teal: #087F8C;
+    --teal-dark: #066A73;
+    --mint: #EAF7F6;
+    --ink: #243746;
+    --muted: #718096;
+    --line: #DCE8ED;
+    --surface: #FFFFFF;
+}
+
+.stApp {
+    background: #F5F8FA;
+    color: var(--ink);
+}
+
+[data-testid="stHeader"] {
+    background: rgba(245,248,250,.92);
 }
 
 .block-container {
-    padding-top: 2rem;
+    max-width: 1440px;
+    padding-top: 1.6rem;
     padding-bottom: 3rem;
 }
 
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg,#102B46 0%,#163B54 100%);
+}
+
+[data-testid="stSidebar"] * {
+    color: #F4FAFC !important;
+}
+
+[data-testid="stSidebar"] [data-testid="stRadio"] label {
+    background: rgba(255,255,255,.055);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 11px;
+    padding: 9px 12px;
+    margin: 4px 0;
+    transition: .2s ease;
+}
+
+[data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
+    background: rgba(23,184,176,.18);
+    border-color: rgba(115,225,218,.35);
+}
+
+[data-testid="stSidebar"] hr {
+    border-color: rgba(255,255,255,.18);
+}
+
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
+    color: #C5D8E4 !important;
+}
+
+h1, h2, h3 {
+    color: var(--navy) !important;
+    letter-spacing: -.025em;
+}
+
+h1 {
+    font-weight: 750 !important;
+}
+
+p, li {
+    line-height: 1.65;
+}
+
+div[data-testid="stMetric"] {
+    background: #FFFFFF;
+    border: 1px solid var(--line);
+    padding: 18px 20px;
+    border-radius: 16px;
+    box-shadow: 0 5px 18px rgba(16,43,70,.045);
+}
+
+div[data-testid="stMetricLabel"] {
+    color: var(--muted);
+}
+
+div[data-testid="stMetricValue"] {
+    color: var(--navy);
+    font-weight: 750;
+}
+
+.stButton > button,
+.stDownloadButton > button {
+    border-radius: 11px;
+    min-height: 2.8rem;
+    font-weight: 650;
+    border: 1px solid #087F8C;
+    transition: all .18s ease;
+}
+
+.stButton > button[kind="primary"] {
+    background: linear-gradient(110deg,#087F8C,#0C9A9A);
+    color: white;
+    border: 0;
+    box-shadow: 0 5px 14px rgba(8,127,140,.18);
+}
+
+.stButton > button:hover,
+.stDownloadButton > button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 18px rgba(16,43,70,.10);
+}
+
+.stTextInput input,
+.stNumberInput input,
+.stTextArea textarea,
+.stSelectbox div[data-baseweb="select"] {
+    border-radius: 10px !important;
+}
+
+[data-testid="stExpander"] {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+}
+
+[data-testid="stFileUploader"] section {
+    background: #F1FAFA;
+    border: 1.5px dashed #78BFC1;
+    border-radius: 16px;
+}
+
 .hero {
-    background: linear-gradient(120deg, #eaf7f8, #f5f9fc);
-    padding: 30px;
-    border-radius: 15px;
-    text-align: center;
-    border: 1px solid #d5e8eb;
+    background:
+        radial-gradient(circle at 88% 12%,rgba(40,190,182,.23),transparent 28%),
+        linear-gradient(120deg,#102B46 0%,#164B61 62%,#087F8C 100%);
+    padding: 38px 40px;
+    border-radius: 22px;
+    color: white;
+    margin-bottom: 22px;
+    box-shadow: 0 14px 34px rgba(16,43,70,.13);
 }
 
 .hero h1 {
-    color: #087F8C;
-    font-size: 42px;
-    font-weight: 700;
+    color: white !important;
+    font-size: clamp(2rem,4vw,3rem);
+    margin: 0 0 8px 0;
 }
 
 .hero h3 {
-    color: #183B56;
-    font-weight: 500;
+    color: #D8F4F1 !important;
+    font-size: 1.15rem;
+    font-weight: 550;
+    margin: 0 0 12px 0;
 }
 
 .hero p {
-    color: #555555;
-    font-size: 16px;
+    color: #E6F2F5;
+    font-size: 1rem;
+    max-width: 720px;
+    margin-bottom: 0;
+}
+
+.eyebrow {
+    color: #8FE2DC;
+    text-transform: uppercase;
+    font-size: .76rem;
+    font-weight: 750;
+    letter-spacing: .13em;
 }
 
 .feature-card {
-    background-color: #f0f7f8;
-    border: 1px solid #d5e8eb;
-    border-radius: 12px;
-    padding: 20px;
-    min-height: 145px;
-    margin-bottom: 15px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 17px;
+    padding: 22px;
+    min-height: 158px;
+    margin-bottom: 14px;
+    box-shadow: 0 5px 18px rgba(16,43,70,.045);
 }
 
 .feature-card h4 {
-    color: #087F8C;
+    color: var(--navy);
+    margin: 0 0 9px 0;
+    font-size: 1.05rem;
 }
 
 .feature-card p {
-    color: #555555;
-    font-size: 14px;
+    color: var(--muted);
+    font-size: .91rem;
+    margin: 0;
 }
 
-.section-heading {
-    color: #087F8C;
-    font-weight: 600;
+.section-kicker {
+    color: var(--teal);
+    font-size: .75rem;
+    font-weight: 750;
+    letter-spacing: .12em;
+    text-transform: uppercase;
 }
 
 .small-note {
-    color: #777777;
+    color: var(--muted);
     font-size: 13px;
+}
+
+.footer {
+    text-align: center;
+    padding: 20px 10px;
+    color: #718096;
+}
+
+@media (max-width: 700px) {
+    .block-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .hero {
+        padding: 27px 23px;
+        border-radius: 17px;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -144,53 +298,40 @@ model = genai.GenerativeModel("gemini-2.5-flash")
 
 
 # ============================================================
-# PDF GENERATOR
+# HELPER FUNCTIONS
 # ============================================================
 
 def create_pdf(report_text):
 
     buffer = BytesIO()
-
     doc = SimpleDocTemplate(buffer)
-
     styles = getSampleStyleSheet()
 
-    story = []
-
-    story.append(
+    story = [
         Paragraph(
             "MediSimplify AI - Medical Report Simplifier",
             styles["Title"]
-        )
-    )
-
-    story.append(Spacer(1, 12))
+        ),
+        Spacer(1, 12)
+    ]
 
     for line in report_text.split("\n"):
-
         line = line.replace("##", "")
         line = line.replace("**", "")
         line = line.replace("*", "•")
         line = escape(line)
 
         if line.strip():
-
             story.append(
                 Paragraph(line, styles["Normal"])
             )
-
             story.append(Spacer(1, 6))
 
     doc.build(story)
-
     buffer.seek(0)
 
     return buffer
 
-
-# ============================================================
-# REPORT SECTION PARSER
-# ============================================================
 
 def display_organized_report(report_text):
 
@@ -203,31 +344,56 @@ def display_organized_report(report_text):
     displayed_sections = 0
 
     for section in sections:
-
         section = section.strip()
 
         if not section:
             continue
 
         lines = section.split("\n")
-
         heading = lines[0].replace("##", "").strip()
-
         content = "\n".join(lines[1:]).strip()
 
         if heading:
-
             displayed_sections += 1
 
             with st.expander(
                 f"📌 {heading}",
                 expanded=(displayed_sections == 1)
             ):
-
                 st.markdown(content)
 
     if displayed_sections == 0:
         st.markdown(report_text)
+
+
+def generate_medicine_information(medicine_name):
+
+    medicine_prompt = f"""
+You are MediSimplify AI. Explain the medicine named:
+{medicine_name}
+
+Use simple, cautious educational language and provide:
+
+1. What this medicine is generally used for.
+2. Common side effects, if well established.
+3. Important precautions and interactions to discuss with a pharmacist or doctor.
+4. When a person should seek urgent medical help for a serious reaction.
+
+Do not infer why this particular user takes it.
+Do not give a dose or prescribe it.
+Do not recommend starting, stopping or changing it.
+Do not claim it is suitable for the user.
+
+If the medicine name is ambiguous, explain that the exact spelling
+or active ingredient needs to be confirmed.
+
+State that medicine information must be checked with a qualified
+healthcare professional.
+"""
+
+    response = model.generate_content(medicine_prompt)
+
+    return response.text or ""
 
 
 # ============================================================
@@ -236,8 +402,8 @@ def display_organized_report(report_text):
 
 st.sidebar.markdown(
     """
-    <h2 style="color:#087F8C;">🏥 MediSimplify AI</h2>
-    <p style="color:#777;">Understand • Learn • Stay Informed</p>
+    <h2 style="color:#FFFFFF;">🏥 MediSimplify AI</h2>
+    <p style="color:#C5D8E4;">Understand • Learn • Stay Informed</p>
     """,
     unsafe_allow_html=True
 )
@@ -298,96 +464,89 @@ if page == "🏠 Dashboard":
 
     st.markdown("""
     <div class="hero">
-        <h1>🏥 MediSimplify AI</h1>
-        <h3>AI-Powered Medical Document Intelligence System</h3>
+        <div class="eyebrow">Understand • Learn • Stay Informed</div>
+        <h1>MediSimplify AI</h1>
+        <h3>Medical information, made easier to understand.</h3>
         <p>
-            Understand your medical reports in simple language.
-            Make more informed conversations with your doctor.
+            Turn complex medical reports into clear, structured explanations.
+            Explore your health information and prepare better questions
+            for your healthcare professional.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-    st.divider()
+    st.markdown(
+        '<div class="section-kicker">Your workspace</div>',
+        unsafe_allow_html=True
+    )
 
-    st.subheader("Welcome to MediSimplify AI")
+    st.subheader("Welcome to your health information hub")
 
     st.write(
-        "A simple platform designed to help users understand "
-        "complex medical reports using Generative AI."
+        "Choose a tool below to get started. Your information is "
+        "kept within the current app session."
     )
+
+    cards = [
+        ("📄", "Medical Report Analysis",
+         "Upload a PDF and receive a clear, section-by-section explanation."),
+        ("💊", "Medicine Information",
+         "Explore general uses, common side effects and precautions."),
+        ("💬", "Chat with Your Report",
+         "Ask questions about your latest report explanation."),
+        ("👤", "Patient Information",
+         "Organise basic details and relevant medical history."),
+        ("❤️", "Health Information",
+         "Review BMI, lifestyle details and vital signs."),
+        ("📥", "Downloadable Reports",
+         "Save your simplified explanation as a PDF or text file.")
+    ]
+
+    for row in range(2):
+        cols = st.columns(3)
+
+        for col, item in zip(cols, cards[row * 3:(row + 1) * 3]):
+            with col:
+                st.markdown(f"""
+                <div class="feature-card">
+                    <div style="font-size:1.55rem;margin-bottom:10px">
+                        {item[0]}
+                    </div>
+                    <h4>{item[1]}</h4>
+                    <p>{item[2]}</p>
+                </div>
+                """, unsafe_allow_html=True)
+
+    st.markdown(
+        '<div class="section-kicker">Session overview</div>',
+        unsafe_allow_html=True
+    )
+
+    st.subheader("Your activity")
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.markdown("""
-        <div class="feature-card">
-            <h4>📄 Report Simplification</h4>
-            <p>Convert complex medical reports into simple language.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col2:
-        st.markdown("""
-        <div class="feature-card">
-            <h4>📊 Health Information</h4>
-            <p>Organise patient details, lifestyle and vital signs.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col3:
-        st.markdown("""
-        <div class="feature-card">
-            <h4>💊 Medicine Explanation</h4>
-            <p>Understand general medicine information and precautions.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    col4, col5, col6 = st.columns(3)
-
-    with col4:
-        st.markdown("""
-        <div class="feature-card">
-            <h4>⚖️ BMI Calculator</h4>
-            <p>Calculate BMI using height and weight.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col5:
-        st.markdown("""
-        <div class="feature-card">
-            <h4>💬 Chat with Report</h4>
-            <p>Ask questions about your latest report explanation.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col6:
-        st.markdown("""
-        <div class="feature-card">
-            <h4>📥 Report Downloads</h4>
-            <p>Download your simplified report in PDF or TXT format.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.divider()
-
-    st.subheader("Your Session Overview")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
         st.metric(
-            "Reports Analysed",
+            "Reports analysed",
             len(st.session_state.report_history)
         )
 
     with col2:
         st.metric(
-            "Latest Report Available",
-            "Yes" if st.session_state.latest_report_text else "No"
+            "Latest report",
+            "Available" if st.session_state.latest_report_text else "Not yet"
+        )
+
+    with col3:
+        st.metric(
+            "Chat messages",
+            len(st.session_state.chat_history)
         )
 
     st.caption(
-        "Report history is temporary and limited to the current session."
+        "Your report history is temporary and limited to the current "
+        "Streamlit session."
     )
 
 
@@ -404,88 +563,91 @@ elif page == "👤 Patient Information":
         "to provide context when explaining the uploaded report."
     )
 
-    st.text_input(
-        "Patient Name",
-        key="patient_name"
-    )
+    with st.container(border=True):
+        st.subheader("Basic Details")
 
-    st.number_input(
-        "Age",
-        min_value=1,
-        max_value=120,
-        value=30,
-        step=1,
-        key="patient_age"
-    )
+        col1, col2 = st.columns(2)
 
-    st.selectbox(
-        "Gender",
-        ["Select", "Male", "Female", "Other"],
-        key="patient_gender"
-    )
+        with col1:
+            st.text_input(
+                "Patient Name",
+                key="patient_name"
+            )
 
-    st.date_input(
-        "Report Date",
-        value=date.today(),
-        key="report_date"
-    )
+            st.number_input(
+                "Age",
+                min_value=1,
+                max_value=120,
+                value=30,
+                step=1,
+                key="patient_age"
+            )
 
-    st.text_input(
-        "Hospital / Lab Name",
-        key="hospital_name"
-    )
+            st.selectbox(
+                "Gender",
+                ["Select", "Male", "Female", "Other"],
+                key="patient_gender"
+            )
 
-    st.selectbox(
-        "Blood Group",
-        [
-            "Select",
-            "A+",
-            "A-",
-            "B+",
-            "B-",
-            "AB+",
-            "AB-",
-            "O+",
-            "O-"
-        ],
-        key="blood_group"
-    )
+        with col2:
+            st.date_input(
+                "Report Date",
+                value=date.today(),
+                key="report_date"
+            )
 
-    st.text_input(
-        "Emergency Contact Number",
-        placeholder="Enter emergency contact number",
-        key="emergency_contact"
-    )
+            st.text_input(
+                "Hospital / Lab Name",
+                key="hospital_name"
+            )
 
-    st.text_area(
-        "Known Allergies",
-        placeholder="Example: Penicillin, peanuts, dust allergy",
-        key="allergies"
-    )
+            st.selectbox(
+                "Blood Group",
+                [
+                    "Select", "A+", "A-", "B+", "B-",
+                    "AB+", "AB-", "O+", "O-"
+                ],
+                key="blood_group"
+            )
 
-    st.text_area(
-        "Previous Medical Conditions",
-        placeholder="Example: Diabetes, hypertension, asthma",
-        key="medical_history"
-    )
+    with st.container(border=True):
+        st.subheader("Additional Information")
 
-    st.text_area(
-        "Current Medications",
-        placeholder="Enter currently prescribed medicines",
-        key="current_medications"
-    )
+        st.text_input(
+            "Emergency Contact Number",
+            placeholder="Enter emergency contact number",
+            key="emergency_contact"
+        )
 
-    st.text_area(
-        "Past Surgeries",
-        placeholder="Enter previous surgery details if applicable",
-        key="past_surgeries"
-    )
+        st.text_area(
+            "Known Allergies",
+            placeholder="Example: Penicillin, peanuts, dust allergy",
+            key="allergies"
+        )
 
-    st.text_area(
-        "Family Medical History",
-        placeholder="Enter relevant family medical history",
-        key="family_history"
-    )
+        st.text_area(
+            "Previous Medical Conditions",
+            placeholder="Example: Diabetes, hypertension, asthma",
+            key="medical_history"
+        )
+
+        st.text_area(
+            "Current Medications",
+            placeholder="Enter currently prescribed medicines",
+            key="current_medications"
+        )
+
+        st.text_area(
+            "Past Surgeries",
+            placeholder="Enter previous surgery details if applicable",
+            key="past_surgeries"
+        )
+
+        st.text_area(
+            "Family Medical History",
+            placeholder="Enter relevant family medical history",
+            key="family_history"
+        )
 
     st.success(
         "Patient information is maintained in the current Streamlit session."
@@ -500,165 +662,162 @@ elif page == "❤️ Health Information":
 
     st.title("❤️ Health Information")
 
-    st.subheader("BMI Calculator")
+    st.write(
+        "Review general health information, lifestyle details and vital signs."
+    )
 
-    col1, col2 = st.columns(2)
+    with st.container(border=True):
+        st.subheader("⚖️ BMI Calculator")
 
-    with col1:
+        col1, col2 = st.columns(2)
 
-        st.number_input(
-            "Height (cm)",
-            min_value=50,
-            max_value=250,
-            value=170,
-            key="height_cm"
+        with col1:
+            st.number_input(
+                "Height (cm)",
+                min_value=50,
+                max_value=250,
+                value=170,
+                key="height_cm"
+            )
+
+        with col2:
+            st.number_input(
+                "Weight (kg)",
+                min_value=10,
+                max_value=300,
+                value=70,
+                key="weight_kg"
+            )
+
+        height = st.session_state.get("height_cm", 170)
+        weight = st.session_state.get("weight_kg", 70)
+
+        bmi = weight / ((height / 100) ** 2)
+
+        st.metric("Your BMI", f"{bmi:.2f}")
+
+        if bmi < 18.5:
+            st.info("BMI category: Underweight")
+        elif bmi < 25:
+            st.info("BMI category: Normal range")
+        elif bmi < 30:
+            st.info("BMI category: Overweight range")
+        else:
+            st.info("BMI category: Obesity range")
+
+        st.caption(
+            "BMI is a screening measure, not a diagnosis. "
+            "Interpret it with a healthcare professional."
         )
 
-    with col2:
+    with st.container(border=True):
+        st.subheader("Lifestyle Information")
 
-        st.number_input(
-            "Weight (kg)",
-            min_value=10,
-            max_value=300,
-            value=70,
-            key="weight_kg"
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.selectbox(
+                "Do you smoke?",
+                ["No", "Occasionally", "Regularly"],
+                key="smoking"
+            )
+
+            st.selectbox(
+                "Exercise Frequency",
+                [
+                    "Daily",
+                    "3-5 times/week",
+                    "1-2 times/week",
+                    "Rarely",
+                    "Never"
+                ],
+                key="exercise"
+            )
+
+            st.slider(
+                "Average Sleep (hours/day)",
+                1, 12, 7,
+                key="sleep_hours"
+            )
+
+        with col2:
+            st.selectbox(
+                "Do you consume alcohol?",
+                ["No", "Occasionally", "Regularly"],
+                key="alcohol"
+            )
+
+            st.selectbox(
+                "Diet Type",
+                ["Vegetarian", "Non-Vegetarian", "Vegan", "Mixed"],
+                key="diet"
+            )
+
+            st.slider(
+                "Average Water Intake (litres/day)",
+                1, 10, 3,
+                key="water_intake"
+            )
+
+        st.slider(
+            "Stress Level",
+            1, 10, 5,
+            key="stress_level"
         )
 
-    height = st.session_state.get("height_cm", 170)
-    weight = st.session_state.get("weight_kg", 70)
+    with st.container(border=True):
+        st.subheader("Vital Signs")
 
-    bmi = weight / ((height / 100) ** 2)
+        col1, col2 = st.columns(2)
 
-    st.metric("Your BMI", f"{bmi:.2f}")
+        with col1:
+            st.text_input(
+                "Blood Pressure",
+                placeholder="Example: 120/80 mmHg",
+                key="blood_pressure"
+            )
 
-    if bmi < 18.5:
-        st.info("BMI category: Underweight")
+            st.number_input(
+                "Heart Rate (BPM)",
+                min_value=30,
+                max_value=200,
+                value=72,
+                key="heart_rate"
+            )
 
-    elif bmi < 25:
-        st.info("BMI category: Normal range")
+        with col2:
+            st.number_input(
+                "Body Temperature (°C)",
+                min_value=30.0,
+                max_value=45.0,
+                value=36.5,
+                step=0.1,
+                key="body_temperature"
+            )
 
-    elif bmi < 30:
-        st.info("BMI category: Overweight range")
+            st.slider(
+                "Oxygen Saturation (SpO₂ %)",
+                70, 100, 98,
+                key="oxygen_level"
+            )
 
-    else:
-        st.info("BMI category: Obesity range")
+    with st.container(border=True):
+        st.subheader("Health Goals")
 
-    st.caption(
-        "BMI is a screening measure, not a diagnosis. "
-        "Interpret it with a healthcare professional."
-    )
-
-    st.divider()
-
-    st.subheader("Lifestyle Information")
-
-    st.selectbox(
-        "Do you smoke?",
-        ["No", "Occasionally", "Regularly"],
-        key="smoking"
-    )
-
-    st.selectbox(
-        "Do you consume alcohol?",
-        ["No", "Occasionally", "Regularly"],
-        key="alcohol"
-    )
-
-    st.selectbox(
-        "Exercise Frequency",
-        [
-            "Daily",
-            "3-5 times/week",
-            "1-2 times/week",
-            "Rarely",
-            "Never"
-        ],
-        key="exercise"
-    )
-
-    st.selectbox(
-        "Diet Type",
-        ["Vegetarian", "Non-Vegetarian", "Vegan", "Mixed"],
-        key="diet"
-    )
-
-    st.slider(
-        "Average Sleep (hours/day)",
-        1,
-        12,
-        7,
-        key="sleep_hours"
-    )
-
-    st.slider(
-        "Average Water Intake (litres/day)",
-        1,
-        10,
-        3,
-        key="water_intake"
-    )
-
-    st.slider(
-        "Stress Level",
-        1,
-        10,
-        5,
-        key="stress_level"
-    )
-
-    st.divider()
-
-    st.subheader("Vital Signs")
-
-    st.text_input(
-        "Blood Pressure",
-        placeholder="Example: 120/80 mmHg",
-        key="blood_pressure"
-    )
-
-    st.number_input(
-        "Heart Rate (BPM)",
-        min_value=30,
-        max_value=200,
-        value=72,
-        key="heart_rate"
-    )
-
-    st.number_input(
-        "Body Temperature (°C)",
-        min_value=30.0,
-        max_value=45.0,
-        value=36.5,
-        step=0.1,
-        key="body_temperature"
-    )
-
-    st.slider(
-        "Oxygen Saturation (SpO₂ %)",
-        70,
-        100,
-        98,
-        key="oxygen_level"
-    )
-
-    st.divider()
-
-    st.subheader("Health Goals")
-
-    st.selectbox(
-        "Primary Health Goal",
-        [
-            "General Health Checkup",
-            "Weight Loss",
-            "Weight Gain",
-            "Control Diabetes",
-            "Control Blood Pressure",
-            "Improve Heart Health",
-            "Improve Fitness",
-            "Other"
-        ],
-        key="health_goal"
-    )
+        st.selectbox(
+            "Primary Health Goal",
+            [
+                "General Health Checkup",
+                "Weight Loss",
+                "Weight Gain",
+                "Control Diabetes",
+                "Control Blood Pressure",
+                "Improve Heart Health",
+                "Improve Fitness",
+                "Other"
+            ],
+            key="health_goal"
+        )
 
 
 # ============================================================
@@ -674,44 +833,41 @@ elif page == "📄 Medical Report Analysis":
         "explanation in simple English."
     )
 
-    uploaded_file = st.file_uploader(
-        "Choose your medical report PDF",
-        type=["pdf"],
-        key="medical_pdf"
-    )
+    with st.container(border=True):
+        st.subheader("Upload your report")
+
+        uploaded_file = st.file_uploader(
+            "Choose your medical report PDF",
+            type=["pdf"],
+            key="medical_pdf"
+        )
 
     if uploaded_file:
 
         try:
-
             reader = PdfReader(uploaded_file)
-
             extracted_text = ""
 
             for pdf_page in reader.pages:
-
                 page_text = pdf_page.extract_text()
 
                 if page_text:
                     extracted_text += page_text + "\n"
 
         except Exception as error:
-
             st.error(f"Unable to read PDF: {error}")
             st.stop()
 
         if not extracted_text.strip():
-
             st.warning(
-                "No readable text was found. "
-                "This may be a scanned PDF requiring OCR."
+                "No readable text was found. This may be a scanned PDF "
+                "requiring OCR."
             )
             st.stop()
 
         st.success("PDF uploaded successfully!")
 
         with st.expander("View Extracted PDF Text"):
-
             st.text_area(
                 "Extracted Text",
                 extracted_text,
@@ -724,7 +880,9 @@ elif page == "📄 Medical Report Analysis":
             use_container_width=True
         ):
 
-            patient_name = st.session_state.get("patient_name", "").strip()
+            patient_name = st.session_state.get(
+                "patient_name", ""
+            ).strip()
 
             patient_gender = st.session_state.get(
                 "patient_gender", "Select"
@@ -734,13 +892,15 @@ elif page == "📄 Medical Report Analysis":
                 "hospital_name", ""
             ).strip()
 
-            if not patient_name or not hospital_name or patient_gender == "Select":
-
+            if (
+                not patient_name
+                or not hospital_name
+                or patient_gender == "Select"
+            ):
                 st.warning(
                     "Please enter Patient Name, Gender and Hospital/Lab "
                     "in the Patient Information section first."
                 )
-
                 st.stop()
 
             report_text_input = extracted_text[:12000]
@@ -854,37 +1014,28 @@ This explanation is for educational purposes only and is not a medical diagnosis
 """
 
             progress = st.progress(0)
-
             status = st.empty()
 
             try:
-
                 status.info("Step 1 of 3: Preparing the report...")
-
                 progress.progress(20)
 
                 status.info("Step 2 of 3: Analysing the report with AI...")
 
                 response = model.generate_content(prompt)
+                report_text = response.text or ""
 
-                report_text = response.text
-
-                if not report_text:
-
+                if not report_text.strip():
                     st.error(
                         "The AI returned an empty response. Please try again."
                     )
-
                     st.stop()
 
                 progress.progress(75)
-
                 status.info("Step 3 of 3: Preparing your results...")
 
                 st.session_state.latest_report_text = report_text
-
                 st.session_state.latest_medicine_text = ""
-
                 st.session_state.chat_history = []
 
                 report_record = {
@@ -905,7 +1056,6 @@ This explanation is for educational purposes only and is not a medical diagnosis
                 ).strip()
 
                 if current_medications:
-
                     medicine_prompt = f"""
 Explain the following medicines in simple English.
 
@@ -925,7 +1075,6 @@ doctor or pharmacist.
 """
 
                     try:
-
                         medicine_response = model.generate_content(
                             medicine_prompt
                         )
@@ -935,25 +1084,71 @@ doctor or pharmacist.
                         )
 
                     except Exception as medicine_error:
-
                         st.warning(
                             "The report was analysed, but medicine "
                             f"information could not be generated: {medicine_error}"
                         )
 
                 progress.progress(100)
-
                 status.success("Analysis completed successfully!")
-
                 st.session_state.analysis_completed = True
 
             except Exception as error:
-
                 status.empty()
-
                 st.error(f"Gemini Error: {error}")
-
                 st.stop()
+
+    # --------------------------------------------------------
+    # STANDALONE MEDICINE INFORMATION TOOL
+    # --------------------------------------------------------
+
+    st.divider()
+    st.subheader("💊 Medicine Information")
+
+    st.caption(
+        "Enter a medicine name to learn general information. "
+        "This does not confirm whether it is suitable for you."
+    )
+
+    medicine_name = st.text_input(
+        "Medicine name",
+        placeholder="For example: Paracetamol",
+        key="medicine_name_input"
+    )
+
+    if st.button(
+        "Generate Medicine Explanation",
+        key="generate_medicine_button",
+        use_container_width=True
+    ):
+
+        if not medicine_name.strip():
+            st.warning("Please enter a medicine name first.")
+
+        else:
+            try:
+                with st.spinner("Preparing medicine information..."):
+                    medicine_text = generate_medicine_information(
+                        medicine_name.strip()
+                    )
+
+                if medicine_text.strip():
+                    st.session_state.latest_medicine_text = medicine_text
+                    st.success("Medicine information generated.")
+                else:
+                    st.error(
+                        "The AI returned an empty response. Please try again."
+                    )
+
+            except Exception as medicine_error:
+                st.error(
+                    f"Unable to generate medicine information: {medicine_error}"
+                )
+
+    if st.session_state.latest_medicine_text:
+        with st.container(border=True):
+            st.markdown("#### Medicine explanation")
+            st.markdown(st.session_state.latest_medicine_text)
 
     # --------------------------------------------------------
     # DISPLAY LATEST REPORT
@@ -962,39 +1157,18 @@ doctor or pharmacist.
     if st.session_state.latest_report_text:
 
         st.divider()
-
         st.subheader("📋 Your AI Report Explanation")
 
         display_organized_report(
             st.session_state.latest_report_text
         )
 
-        # ----------------------------------------------------
-        # MEDICINE EXPLANATION
-        # ----------------------------------------------------
-
-        if st.session_state.latest_medicine_text:
-
-            st.divider()
-
-            st.subheader("💊 Medicine Explanation")
-
-            st.markdown(
-                st.session_state.latest_medicine_text
-            )
-
-        # ----------------------------------------------------
-        # DOWNLOAD REPORTS
-        # ----------------------------------------------------
-
         st.divider()
-
         st.subheader("📥 Download Your Report")
 
         col1, col2 = st.columns(2)
 
         with col1:
-
             st.download_button(
                 label="Download TXT Report",
                 data=st.session_state.latest_report_text,
@@ -1004,7 +1178,6 @@ doctor or pharmacist.
             )
 
         with col2:
-
             pdf_file = create_pdf(
                 st.session_state.latest_report_text
             )
@@ -1022,7 +1195,6 @@ doctor or pharmacist.
     # --------------------------------------------------------
 
     st.divider()
-
     st.subheader("📚 Recent Report History")
 
     if st.session_state.report_history:
@@ -1035,11 +1207,9 @@ doctor or pharmacist.
             with st.expander(
                 f"Report {index} | {item['patient']} | {item['created_at']}"
             ):
-
                 st.markdown(item["report"])
 
     else:
-
         st.info(
             "No reports have been analysed in this session yet."
         )
@@ -1071,9 +1241,7 @@ elif page == "💬 Chat with Report":
     else:
 
         for message in st.session_state.chat_history:
-
             with st.chat_message(message["role"]):
-
                 st.markdown(message["content"])
 
         user_question = st.chat_input(
@@ -1114,14 +1282,10 @@ USER QUESTION:
 """
 
             try:
-
                 with st.chat_message("assistant"):
 
                     with st.spinner("Preparing your answer..."):
-
-                        chat_response = model.generate_content(
-                            chat_prompt
-                        )
+                        chat_response = model.generate_content(chat_prompt)
 
                         answer = (
                             chat_response.text
@@ -1136,7 +1300,6 @@ USER QUESTION:
                 })
 
             except Exception as error:
-
                 st.error(f"Chat Error: {error}")
 
 
@@ -1167,7 +1330,6 @@ elif page == "⚙️ About & Privacy":
     """)
 
     st.divider()
-
     st.subheader("Privacy Information")
 
     st.markdown("""
@@ -1184,7 +1346,6 @@ elif page == "⚙️ About & Privacy":
     """)
 
     st.divider()
-
     st.subheader("Medical Disclaimer")
 
     st.warning(
@@ -1196,11 +1357,9 @@ elif page == "⚙️ About & Privacy":
     )
 
     st.divider()
-
     st.subheader("Developer")
 
     st.write("MediSimplify AI")
-
     st.caption("Understand • Learn • Stay Informed")
 
 
@@ -1211,7 +1370,7 @@ elif page == "⚙️ About & Privacy":
 st.divider()
 
 st.markdown("""
-<div style="text-align:center; padding:15px; color:#888;">
+<div class="footer">
     <h4 style="color:#087F8C;">🏥 MediSimplify AI</h4>
     <p>Understand • Learn • Stay Informed</p>
     <small>
