@@ -1,3 +1,4 @@
+
 import streamlit as st
 from pypdf import PdfReader
 import google.generativeai as genai
@@ -9,12 +10,89 @@ from xml.sax.saxutils import escape
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 
+
+# -----------------------------
+# PAGE CONFIGURATION
+# -----------------------------
+st.set_page_config(
+    page_title="MediSimplify AI | Medical Report Simplifier",
+    page_icon="🏥",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+
+# -----------------------------
+# CUSTOM CSS
+# -----------------------------
+st.markdown("""
+<style>
+.main {
+    background-color: #ffffff;
+}
+
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+
+.feature-card {
+    background-color: #f0f7f8;
+    border: 1px solid #d5e8eb;
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 155px;
+    margin-bottom: 15px;
+}
+
+.feature-card h4 {
+    color: #167D8D;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.feature-card p {
+    color: #555555;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.hero {
+    text-align: center;
+    padding: 25px 10px;
+}
+
+.hero h1 {
+    color: #167D8D;
+    font-size: 44px;
+    margin-bottom: 8px;
+}
+
+.hero h3 {
+    color: #555555;
+    font-weight: 500;
+}
+
+.hero p {
+    color: #777777;
+    font-size: 17px;
+}
+
+.section-heading {
+    color: #167D8D;
+    font-weight: 600;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # -----------------------------
 # API KEY SETUP
 # -----------------------------
 load_dotenv()
 
 api_key = None
+
 try:
     api_key = st.secrets.get("GEMINI_API_KEY", None)
 except Exception:
@@ -24,7 +102,9 @@ if not api_key:
     api_key = os.getenv("GEMINI_API_KEY")
 
 if not api_key:
-    st.error("GEMINI_API_KEY not found. Add it in Streamlit Secrets or .env file.")
+    st.error(
+        "GEMINI_API_KEY not found. Add it in Streamlit Secrets or your .env file."
+    )
     st.stop()
 
 genai.configure(api_key=api_key)
@@ -40,7 +120,13 @@ def create_pdf(report_text):
     styles = getSampleStyleSheet()
     story = []
 
-    story.append(Paragraph("AI Powered Medical Document Intelligence System", styles["Title"]))
+    story.append(
+        Paragraph(
+            "MediSimplify AI - Medical Report Simplifier",
+            styles["Title"]
+        )
+    )
+
     story.append(Spacer(1, 12))
 
     for line in report_text.split("\n"):
@@ -55,71 +141,215 @@ def create_pdf(report_text):
 
     doc.build(story)
     buffer.seek(0)
+
     return buffer
 
 
 # -----------------------------
 # SIDEBAR
 # -----------------------------
-st.sidebar.title("🏥 AI Powered Medical Document Intelligence System")
+st.sidebar.title("🏥 MediSimplify AI")
 
 st.sidebar.markdown("""
-### About Project
-This project uses Generative AI to simplify complex medical reports into easy English.
+### Medical Report Simplifier
+
+Understand your medical reports in simple language with the help of Generative AI.
+
+---
+
+### About the Project
+
+MediSimplify AI is designed to make complex medical reports easier to understand.
 
 ### How to Use
-1. Fill patient details
-2. Upload a medical report PDF
-3. Click Simplify Report
-4. Download the summary
+
+1. Enter patient details.
+2. Upload your medical report PDF.
+3. Click Simplify Report.
+4. Review the AI-generated explanation.
+5. Download your simplified report.
+
+---
+
+### Features
+
+- Medical Report Simplification
+- Health Information
+- BMI Calculator
+- Medicine Explanation
+- Chat with Report
+- PDF Downloads
+
+---
 
 ### Developed By
-Mukesh
-""")
+
+**Mukesh**
+
+---
+
+<small>For educational purposes only. Not a replacement for professional medical advice.</small>
+""", unsafe_allow_html=True)
 
 
 # -----------------------------
-# MAIN UI
+# HOMEPAGE HEADER
 # -----------------------------
-st.title("AI-Powered Medical Document Intelligence System")
+st.markdown("""
+<div class="hero">
+    <h1>🏥 MediSimplify AI</h1>
+    <h3>AI-Powered Medical Document Intelligence System</h3>
+    <p>
+        Understand your medical reports in simple language.
+        Make more informed conversations with your doctor.
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
+st.divider()
+
+
+# -----------------------------
+# MEDICAL DISCLAIMER
+# -----------------------------
 st.info(
-    "⚠️ Disclaimer: This AI-generated explanation is for educational purposes only. "
-    "Always consult a qualified doctor before making any medical decisions."
+    "⚠️ Medical Disclaimer: This AI-generated explanation is for educational "
+    "purposes only. It is not a medical diagnosis and must not replace advice "
+    "from a qualified healthcare professional. Always consult your doctor "
+    "before making medical decisions."
 )
 
-st.markdown("""
-### 📄 Upload your medical report and get:
 
-✅ Easy-to-understand explanations  
-✅ Abnormal values highlighted  
-✅ Diet recommendations  
-✅ Lifestyle suggestions  
-✅ Questions to ask your doctor  
-✅ Health score  
-✅ Emergency warning  
-✅ Medicine explanation  
-✅ Chat with report  
-""")
+# -----------------------------
+# FEATURE CARDS
+# -----------------------------
+st.markdown("""
+<h2 style="text-align:center; color:#167D8D;">
+    Explore MediSimplify AI Features
+</h2>
+<p style="text-align:center; color:#777;">
+    Tools designed to help you understand your medical information.
+</p>
+""", unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.markdown("""
+    <div class="feature-card">
+        <h4>📄 Report Simplification</h4>
+        <p>
+        Convert complex medical reports into simple,
+        understandable language.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col2:
+    st.markdown("""
+    <div class="feature-card">
+        <h4>📊 Health Insights</h4>
+        <p>
+        Understand important report values and review
+        AI-generated summaries.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col3:
+    st.markdown("""
+    <div class="feature-card">
+        <h4>💊 Medicine Explanation</h4>
+        <p>
+        Read general explanations of medicines,
+        their purposes and precautions.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+col4, col5, col6 = st.columns(3)
+
+with col4:
+    st.markdown("""
+    <div class="feature-card">
+        <h4>❤️ Health Information</h4>
+        <p>
+        Record patient details, BMI, lifestyle
+        information and vital signs.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col5:
+    st.markdown("""
+    <div class="feature-card">
+        <h4>💬 Chat with Report</h4>
+        <p>
+        Ask questions and receive simple explanations
+        based on your report.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col6:
+    st.markdown("""
+    <div class="feature-card">
+        <h4>📥 Download Reports</h4>
+        <p>
+        Download your simplified medical report
+        in PDF or text format.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.divider()
+
 
 # -----------------------------
 # PATIENT DETAILS
 # -----------------------------
-st.markdown("### 👤 Patient Details")
+st.markdown("## 👤 Patient Details")
 
 patient_name = st.text_input("Patient Name")
-patient_age = st.number_input("Age", min_value=1, max_value=120, step=1, value=30)
-patient_gender = st.selectbox("Gender", ["Select", "Male", "Female", "Other"])
+
+patient_age = st.number_input(
+    "Age",
+    min_value=1,
+    max_value=120,
+    step=1,
+    value=30
+)
+
+patient_gender = st.selectbox(
+    "Gender",
+    ["Select", "Male", "Female", "Other"]
+)
+
 report_date = st.date_input("Report Date")
+
 hospital_name = st.text_input("Hospital / Lab Name")
 
-# -----------------------------
-# BMI
-# -----------------------------
-st.markdown("### ⚖️ BMI Calculator")
 
-height_cm = st.number_input("Height (cm)", min_value=50, max_value=250, step=1, value=170)
-weight_kg = st.number_input("Weight (kg)", min_value=10, max_value=300, step=1, value=70)
+# -----------------------------
+# BMI CALCULATOR
+# -----------------------------
+st.markdown("## ⚖️ BMI Calculator")
+
+height_cm = st.number_input(
+    "Height (cm)",
+    min_value=50,
+    max_value=250,
+    step=1,
+    value=170
+)
+
+weight_kg = st.number_input(
+    "Weight (kg)",
+    min_value=10,
+    max_value=300,
+    step=1,
+    value=70
+)
 
 bmi = weight_kg / ((height_cm / 100) ** 2)
 
@@ -134,10 +364,11 @@ elif bmi < 30:
 else:
     st.error("BMI Category: Obese")
 
+
 # -----------------------------
-# EXTRA PATIENT INFO
+# ADDITIONAL PATIENT INFORMATION
 # -----------------------------
-st.markdown("### 🩺 Additional Patient Information")
+st.markdown("## 🩺 Additional Patient Information")
 
 blood_group = st.selectbox(
     "Blood Group",
@@ -161,7 +392,7 @@ medical_history = st.text_area(
 
 current_medications = st.text_area(
     "Current Medications",
-    placeholder="Example: Paracetamol, Metformin, Jalra-M..."
+    placeholder="Example: Paracetamol, Metformin..."
 )
 
 past_surgeries = st.text_area(
@@ -171,32 +402,80 @@ past_surgeries = st.text_area(
 
 family_history = st.text_area(
     "Family Medical History",
-    placeholder="Example: Father has diabetes, Mother has hypertension..."
+    placeholder="Example: Father has diabetes..."
 )
 
-# -----------------------------
-# LIFESTYLE
-# -----------------------------
-st.markdown("### 🏃 Lifestyle Information")
 
-smoking = st.selectbox("Do you smoke?", ["No", "Occasionally", "Regularly"])
-alcohol = st.selectbox("Do you consume alcohol?", ["No", "Occasionally", "Regularly"])
+# -----------------------------
+# LIFESTYLE INFORMATION
+# -----------------------------
+st.markdown("## 🏃 Lifestyle Information")
+
+smoking = st.selectbox(
+    "Do you smoke?",
+    ["No", "Occasionally", "Regularly"]
+)
+
+alcohol = st.selectbox(
+    "Do you consume alcohol?",
+    ["No", "Occasionally", "Regularly"]
+)
+
 exercise = st.selectbox(
     "Exercise Frequency",
-    ["Daily", "3-5 times/week", "1-2 times/week", "Rarely", "Never"]
+    [
+        "Daily",
+        "3-5 times/week",
+        "1-2 times/week",
+        "Rarely",
+        "Never"
+    ]
 )
-diet = st.selectbox("Diet Type", ["Vegetarian", "Non-Vegetarian", "Vegan", "Mixed"])
-sleep_hours = st.slider("Average Sleep (hours/day)", 1, 12, 7)
-water_intake = st.slider("Average Water Intake (Litres/day)", 1, 10, 3)
-stress_level = st.slider("Stress Level", 1, 10, 5)
+
+diet = st.selectbox(
+    "Diet Type",
+    ["Vegetarian", "Non-Vegetarian", "Vegan", "Mixed"]
+)
+
+sleep_hours = st.slider(
+    "Average Sleep (hours/day)",
+    1,
+    12,
+    7
+)
+
+water_intake = st.slider(
+    "Average Water Intake (Litres/day)",
+    1,
+    10,
+    3
+)
+
+stress_level = st.slider(
+    "Stress Level",
+    1,
+    10,
+    5
+)
+
 
 # -----------------------------
-# VITALS
+# VITAL SIGNS
 # -----------------------------
-st.markdown("### ❤️ Vital Signs")
+st.markdown("## ❤️ Vital Signs")
 
-blood_pressure = st.text_input("Blood Pressure", placeholder="Example: 120/80 mmHg")
-heart_rate = st.number_input("Heart Rate (BPM)", min_value=30, max_value=200, value=72)
+blood_pressure = st.text_input(
+    "Blood Pressure",
+    placeholder="Example: 120/80 mmHg"
+)
+
+heart_rate = st.number_input(
+    "Heart Rate (BPM)",
+    min_value=30,
+    max_value=200,
+    value=72
+)
+
 body_temperature = st.number_input(
     "Body Temperature (°C)",
     min_value=30.0,
@@ -204,12 +483,19 @@ body_temperature = st.number_input(
     value=36.5,
     step=0.1
 )
-oxygen_level = st.slider("Oxygen Saturation (SpO₂ %)", 70, 100, 98)
+
+oxygen_level = st.slider(
+    "Oxygen Saturation (SpO₂ %)",
+    70,
+    100,
+    98
+)
+
 
 # -----------------------------
-# HEALTH GOAL
+# HEALTH GOALS
 # -----------------------------
-st.markdown("### 🎯 Health Goals")
+st.markdown("## 🎯 Health Goals")
 
 health_goal = st.selectbox(
     "Primary Health Goal",
@@ -221,32 +507,64 @@ health_goal = st.selectbox(
         "Control Blood Pressure",
         "Improve Heart Health",
         "Improve Fitness",
-        "Other",
-    ],
+        "Other"
+    ]
 )
 
+
 # -----------------------------
-# FILE UPLOAD
+# PDF UPLOAD
 # -----------------------------
-uploaded_file = st.file_uploader("Upload your medical report PDF", type=["pdf"])
+st.markdown("## 📄 Upload Your Medical Report")
+
+uploaded_file = st.file_uploader(
+    "Choose your medical report PDF",
+    type=["pdf"]
+)
 
 if uploaded_file:
-    reader = PdfReader(uploaded_file)
-    text = ""
 
-    for page in reader.pages:
-        page_text = page.extract_text()
-        if page_text:
-            text += page_text + "\n"
+    try:
+        reader = PdfReader(uploaded_file)
+        text = ""
+
+        for page in reader.pages:
+            page_text = page.extract_text()
+
+            if page_text:
+                text += page_text + "\n"
+
+    except Exception as e:
+        st.error(f"Unable to read the PDF: {e}")
+        st.stop()
+
+    if not text.strip():
+        st.warning(
+            "No readable text was found in this PDF. "
+            "It may be a scanned document that requires OCR."
+        )
+        st.stop()
 
     st.success("✅ PDF uploaded successfully!")
 
     with st.expander("📄 View Extracted Text (Optional)"):
-        st.text_area("Report Content", text, height=300)
+        st.text_area(
+            "Report Content",
+            text,
+            height=300
+        )
 
-    if st.button("Simplify Report"):
-        if not patient_name or patient_gender == "Select" or not hospital_name:
-            st.warning("Please fill Patient Name, Gender, and Hospital/Lab Name before simplifying.")
+    if st.button("✨ Simplify Report", type="primary"):
+
+        if (
+            not patient_name.strip()
+            or patient_gender == "Select"
+            or not hospital_name.strip()
+        ):
+            st.warning(
+                "Please fill Patient Name, Gender, and Hospital/Lab Name "
+                "before simplifying."
+            )
             st.stop()
 
         # Limit PDF text to avoid Gemini timeout
@@ -254,6 +572,11 @@ if uploaded_file:
 
         prompt = f"""
 You are an AI Medical Report Simplifier.
+
+Explain the report in simple English.
+Do not invent medical values or make a diagnosis.
+Clearly distinguish between report findings and general information.
+If a value is not available, say that it is not provided.
 
 Patient Information:
 Name: {patient_name}
@@ -296,24 +619,31 @@ Explain the report in very simple English.
 
 ## Abnormal Values
 List abnormal or important values.
+Do not assume a value is abnormal without an appropriate reference range.
 
 ## What It Means
-Explain possible meaning.
+Explain possible meanings in simple language.
 
 ## Health Risk Assessment
-Mention risk level: Healthy / Needs Attention / Critical.
+Mention whether any findings need routine follow-up,
+prompt medical review, or urgent medical attention.
+Do not label a person healthy based only on this report.
 
 ## Diet Suggestions
-Give personalized diet suggestions.
+Give general, relevant diet suggestions.
+Avoid unsupported treatment claims.
 
 ## Lifestyle Suggestions
-Give suggestions based on smoking, alcohol, exercise, sleep, water intake, stress.
+Give suggestions based on smoking, alcohol, exercise,
+sleep, water intake and stress.
 
 ## Questions to Ask Doctor
-Give 5 questions.
+Give 5 useful questions.
 
 ## Health Score
-Give overall health score out of 100 in this exact format:
+If a meaningful score cannot be calculated from the available information,
+say so. Do not invent a score.
+If you provide one, explain its limitations and use this format:
 Health Score: 65/100
 
 At the end write:
@@ -325,37 +655,54 @@ At the end write:
                 response = model.generate_content(prompt)
                 report_text = response.text
 
+                if not report_text:
+                    st.error("The AI returned an empty response. Please try again.")
+                    st.stop()
+
         except Exception as e:
             st.error(f"Gemini Error: {e}")
             st.stop()
 
-        st.subheader("AI Explanation")
+        st.markdown("---")
+        st.subheader("📋 AI Medical Report Explanation")
+
         st.write(report_text)
+
 
         # -----------------------------
         # HEALTH SCORE
         # -----------------------------
-        match = re.search(r"Health Score:\s*(\d+)", report_text, re.IGNORECASE)
+        match = re.search(
+            r"Health Score:\s*(\d+)",
+            report_text,
+            re.IGNORECASE
+        )
 
         if match:
+
             health_score = int(match.group(1))
             health_score = max(0, min(100, health_score))
 
             st.subheader("📊 Health Score")
+
             st.write(f"Health Score: {health_score}/100")
+
             st.progress(health_score / 100)
 
-            if health_score >= 80:
-                st.success("🟢 Excellent Health")
-            elif health_score >= 60:
-                st.warning("🟡 Moderate Health")
-            else:
-                st.error("🔴 Poor Health")
+            st.caption(
+                "This is an AI-generated informational score, "
+                "not a clinically validated health assessment."
+            )
+
         else:
-            st.warning("Health score was not found in the AI response.")
+            st.warning(
+                "A health score was not provided. "
+                "Please review the written explanation."
+            )
+
 
         # -----------------------------
-        # EMERGENCY WARNING
+        # EMERGENCY NOTICE
         # -----------------------------
         emergency_words = [
             "critical",
@@ -363,28 +710,38 @@ At the end write:
             "urgent",
             "heart attack",
             "stroke",
-            "cancer",
             "icu",
             "severe",
             "immediate",
             "danger",
-            "high risk",
+            "high risk"
         ]
 
         report_lower = report_text.lower()
 
         if any(word in report_lower for word in emergency_words):
+
             st.error(
-                "🚨 Emergency Warning: This report may contain serious findings. "
-                "Please consult a doctor immediately."
+                "⚠️ The AI explanation contains terms that may indicate "
+                "important findings. Please review the report with a "
+                "qualified healthcare professional. If you have severe "
+                "or sudden symptoms, seek emergency care."
             )
+
         else:
-            st.success("✅ No emergency warning detected.")
+
+            st.info(
+                "No emergency-related keywords were detected by the "
+                "automated text check. This does not confirm that the "
+                "report is normal or rule out a medical emergency."
+            )
+
 
         # -----------------------------
         # MEDICINE EXPLANATION
         # -----------------------------
         if current_medications.strip():
+
             st.subheader("💊 Medicine Explanation")
 
             medicine_prompt = f"""
@@ -393,31 +750,42 @@ Explain these medicines in simple English:
 Medicines: {current_medications}
 
 For each medicine, explain:
-1. Purpose
-2. Common side effects
-3. Precautions
+1. Common purpose or uses.
+2. Common side effects.
+3. Important precautions.
 
-Keep it short and simple.
+Do not recommend changing or stopping prescribed medicines.
+Mention that the patient should confirm medicine-related
+questions with their doctor or pharmacist.
 """
 
             try:
+
                 with st.spinner("💊 Explaining medicines..."):
-                    medicine_response = model.generate_content(medicine_prompt)
+
+                    medicine_response = model.generate_content(
+                        medicine_prompt
+                    )
+
                 st.write(medicine_response.text)
 
             except Exception as e:
-                st.warning(f"Medicine explanation could not be generated: {e}")
+
+                st.warning(
+                    f"Medicine explanation could not be generated: {e}"
+                )
+
 
         # -----------------------------
-        # DOWNLOADS
+        # DOWNLOAD REPORTS
         # -----------------------------
-        st.success("✅ Report simplified successfully!")
+        st.success("✅ Report explanation generated successfully!")
 
         st.download_button(
             label="📥 Download AI Report",
             data=report_text,
-            file_name="Medical_Report_Summary.txt",
-            mime="text/plain",
+            file_name="MediSimplify_AI_Report.txt",
+            mime="text/plain"
         )
 
         st.markdown("---")
@@ -427,8 +795,8 @@ Keep it short and simple.
         st.download_button(
             label="📥 Download Simplified Report as PDF",
             data=pdf_file,
-            file_name="simplified_medical_report.pdf",
-            mime="application/pdf",
+            file_name="MediSimplify_AI_Report.pdf",
+            mime="application/pdf"
         )
 
         st.session_state["latest_report_text"] = report_text
@@ -438,32 +806,58 @@ Keep it short and simple.
 # CHAT WITH REPORT
 # -----------------------------
 if "latest_report_text" in st.session_state:
+
     st.markdown("---")
+
     st.subheader("💬 Chat with Your Medical Report")
 
-    user_question = st.text_input("Ask a question about your report")
+    user_question = st.text_input(
+        "Ask a question about your report",
+        key="report_question"
+    )
 
     if user_question:
-        chat_prompt = f"""
-You are a medical report assistant.
 
-Answer the user's question using only this report explanation:
+        chat_prompt = f"""
+You are a medical report explanation assistant.
+
+Answer the user's question using the report explanation below.
+Use simple English.
+Do not diagnose, prescribe, or recommend changing medication.
+If the report does not contain the answer, say so.
+Encourage the user to consult a qualified doctor for medical decisions.
 
 Report Explanation:
 {st.session_state["latest_report_text"][:8000]}
 
 User Question:
 {user_question}
-
-Give a simple and safe answer.
-Add: Please consult a doctor for medical decisions.
 """
 
         try:
+
             with st.spinner("💬 Answering your question..."):
+
                 chat_response = model.generate_content(chat_prompt)
 
             st.write(chat_response.text)
 
         except Exception as e:
+
             st.error(f"Chat Error: {e}")
+
+
+# -----------------------------
+# FOOTER
+# -----------------------------
+st.markdown("---")
+
+st.markdown("""
+<div style="text-align:center; padding:15px; color:#888;">
+    <h4 style="color:#167D8D;">🏥 MediSimplify AI</h4>
+    <p>Making medical information easier to understand.</p>
+    <small>
+        For educational purposes only. Always consult a qualified doctor.
+    </small>
+</div>
+""", unsafe_allow_html=True)
