@@ -1,4 +1,3 @@
-
 import streamlit as st
 from pypdf import PdfReader
 import google.generativeai as genai
@@ -238,6 +237,41 @@ div[data-testid="stMetricValue"] {
     color: #718096;
 }
 
+.developer-credit {
+    text-align: center;
+    padding: 14px 8px;
+    border-top: 1px solid rgba(255,255,255,.15);
+    margin-top: 18px;
+}
+
+.developer-credit p {
+    color: #C5D8E4 !important;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.developer-credit h4 {
+    color: #55D6CC !important;
+    font-size: 26px;
+    font-weight: 800;
+    margin: 5px 0;
+}
+
+.main-developer-credit {
+    text-align: center;
+    padding: 16px 10px 25px 10px;
+    color: #718096;
+    font-size: 20px;
+    font-weight: 650;
+}
+
+.main-developer-credit strong {
+    color: #087F8C;
+    font-size: 24px;
+    font-weight: 800;
+}
+
 @media (max-width: 700px) {
     .block-container {
         padding-left: 1rem;
@@ -367,6 +401,58 @@ def display_organized_report(report_text):
         st.markdown(report_text)
 
 
+def clean_report_markdown(report_text):
+    """Remove empty bullets and common formatting artefacts from AI output."""
+
+    cleaned_lines = []
+
+    for raw_line in report_text.splitlines():
+
+        line = raw_line.rstrip()
+
+        if re.match(r"^\s*[-*•]\s*$", line):
+            continue
+
+        if re.match(r"^\s*\d+[.)]\s*$", line):
+            continue
+
+        line = re.sub(r"^\s*[•]\s*", "- ", line)
+
+        cleaned_lines.append(line)
+
+    cleaned = "\n".join(cleaned_lines)
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
+
+    return cleaned.strip()
+
+
+def extract_patient_name(report_text):
+    """Extract a name only when the PDF clearly labels it as patient name."""
+
+    patterns = [
+        r"(?im)^\s*patient\s*name\s*[:\-]\s*([A-Z][A-Za-z .'-]{1,80})\s*$",
+        r"(?im)^\s*name\s*of\s*patient\s*[:\-]\s*([A-Z][A-Za-z .'-]{1,80})\s*$",
+        r"(?im)^\s*patient\s*[:\-]\s*([A-Z][A-Za-z .'-]{1,80})\s*$",
+    ]
+
+    for pattern in patterns:
+
+        match = re.search(pattern, report_text)
+
+        if match:
+
+            candidate = re.sub(
+                r"\s+",
+                " ",
+                match.group(1)
+            ).strip(" .:-")
+
+            if candidate and len(candidate.split()) <= 6:
+                return candidate
+
+    return ""
+
+
 def generate_medicine_information(medicine_name):
 
     medicine_prompt = f"""
@@ -443,6 +529,13 @@ st.sidebar.markdown("""
 For educational purposes only.
 """)
 
+st.sidebar.markdown("""
+<div class="developer-credit">
+    <p>Developed by</p>
+    <h4>Mukesh</h4>
+</div>
+""", unsafe_allow_html=True)
+
 
 # ============================================================
 # COMMON MEDICAL DISCLAIMER
@@ -504,10 +597,13 @@ if page == "🏠 Dashboard":
     ]
 
     for row in range(2):
+
         cols = st.columns(3)
 
         for col, item in zip(cols, cards[row * 3:(row + 1) * 3]):
+
             with col:
+
                 st.markdown(f"""
                 <div class="feature-card">
                     <div style="font-size:1.55rem;margin-bottom:10px">
@@ -565,11 +661,13 @@ elif page == "👤 Patient Information":
     )
 
     with st.container(border=True):
+
         st.subheader("Basic Details")
 
         col1, col2 = st.columns(2)
 
         with col1:
+
             st.text_input(
                 "Patient Name",
                 key="patient_name"
@@ -591,6 +689,7 @@ elif page == "👤 Patient Information":
             )
 
         with col2:
+
             st.date_input(
                 "Report Date",
                 value=date.today(),
@@ -612,6 +711,7 @@ elif page == "👤 Patient Information":
             )
 
     with st.container(border=True):
+
         st.subheader("Additional Information")
 
         st.text_input(
@@ -668,11 +768,13 @@ elif page == "❤️ Health Information":
     )
 
     with st.container(border=True):
+
         st.subheader("⚖️ BMI Calculator")
 
         col1, col2 = st.columns(2)
 
         with col1:
+
             st.number_input(
                 "Height (cm)",
                 min_value=50,
@@ -682,6 +784,7 @@ elif page == "❤️ Health Information":
             )
 
         with col2:
+
             st.number_input(
                 "Weight (kg)",
                 min_value=10,
@@ -699,10 +802,13 @@ elif page == "❤️ Health Information":
 
         if bmi < 18.5:
             st.info("BMI category: Underweight")
+
         elif bmi < 25:
             st.info("BMI category: Normal range")
+
         elif bmi < 30:
             st.info("BMI category: Overweight range")
+
         else:
             st.info("BMI category: Obesity range")
 
@@ -712,11 +818,13 @@ elif page == "❤️ Health Information":
         )
 
     with st.container(border=True):
+
         st.subheader("Lifestyle Information")
 
         col1, col2 = st.columns(2)
 
         with col1:
+
             st.selectbox(
                 "Do you smoke?",
                 ["No", "Occasionally", "Regularly"],
@@ -742,6 +850,7 @@ elif page == "❤️ Health Information":
             )
 
         with col2:
+
             st.selectbox(
                 "Do you consume alcohol?",
                 ["No", "Occasionally", "Regularly"],
@@ -767,11 +876,13 @@ elif page == "❤️ Health Information":
         )
 
     with st.container(border=True):
+
         st.subheader("Vital Signs")
 
         col1, col2 = st.columns(2)
 
         with col1:
+
             st.text_input(
                 "Blood Pressure",
                 placeholder="Example: 120/80 mmHg",
@@ -787,6 +898,7 @@ elif page == "❤️ Health Information":
             )
 
         with col2:
+
             st.number_input(
                 "Body Temperature (°C)",
                 min_value=30.0,
@@ -803,6 +915,7 @@ elif page == "❤️ Health Information":
             )
 
     with st.container(border=True):
+
         st.subheader("Health Goals")
 
         st.selectbox(
@@ -835,6 +948,7 @@ elif page == "📄 Medical Report Analysis":
     )
 
     with st.container(border=True):
+
         st.subheader("Upload your report")
 
         uploaded_file = st.file_uploader(
@@ -846,20 +960,24 @@ elif page == "📄 Medical Report Analysis":
     if uploaded_file:
 
         try:
+
             reader = PdfReader(uploaded_file)
             extracted_text = ""
 
             for pdf_page in reader.pages:
+
                 page_text = pdf_page.extract_text()
 
                 if page_text:
                     extracted_text += page_text + "\n"
 
         except Exception as error:
+
             st.error(f"Unable to read PDF: {error}")
             st.stop()
 
         if not extracted_text.strip():
+
             st.warning(
                 "No readable text was found. This may be a scanned PDF "
                 "requiring OCR."
@@ -869,6 +987,7 @@ elif page == "📄 Medical Report Analysis":
         st.success("PDF uploaded successfully!")
 
         with st.expander("View Extracted PDF Text"):
+
             st.text_area(
                 "Extracted Text",
                 extracted_text,
@@ -884,10 +1003,15 @@ elif page == "📄 Medical Report Analysis":
             # PATIENT INFORMATION IS OPTIONAL.
             # Missing values will be shown as "Not provided".
 
-            patient_name = (
-                st.session_state.get("patient_name", "").strip()
-                or "Not provided"
-            )
+            patient_name = st.session_state.get(
+                "patient_name", ""
+            ).strip()
+
+            if not patient_name:
+                patient_name = extract_patient_name(extracted_text)
+
+            if not patient_name:
+                patient_name = "Not provided"
 
             patient_gender = st.session_state.get(
                 "patient_gender", "Select"
@@ -931,6 +1055,13 @@ IMPORTANT RULES:
 8. Use simple, understandable language.
 9. Recommend professional medical review when appropriate.
 10. Do not calculate or invent a clinical health score.
+11. Return clean Markdown with the exact section headings requested below.
+12. Under each heading, write complete sentences or meaningful bullet points.
+13. Never output an empty bullet, empty numbered item, stray dash or isolated asterisk.
+14. Do not create empty sections; explain missing information under Important Limitations.
+15. Avoid repeating the same point in multiple sections.
+16. Do not add decorative symbols or unnecessary introductory text.
+17. If a value or detail is absent from the report, do not guess or fabricate it.
 
 PATIENT INFORMATION:
 
@@ -979,10 +1110,12 @@ MEDICAL REPORT TEXT:
 
 {report_text_input}
 
-Prepare the explanation using these sections:
+Prepare the explanation using these sections.
+Use each heading exactly once. Keep the content concise and readable.
+Do not use empty bullet points.
 
 ## Simple Summary
-Explain the report in simple English.
+Explain the report in simple English in 2-4 complete sentences.
 
 ## Important Findings
 List the important values and observations.
@@ -1022,15 +1155,20 @@ This explanation is for educational purposes only and is not a medical diagnosis
             status = st.empty()
 
             try:
+
                 status.info("Step 1 of 3: Preparing the report...")
                 progress.progress(20)
 
                 status.info("Step 2 of 3: Analysing the report with AI...")
 
                 response = model.generate_content(prompt)
-                report_text = response.text or ""
+
+                report_text = clean_report_markdown(
+                    response.text or ""
+                )
 
                 if not report_text.strip():
+
                     st.error(
                         "The AI returned an empty response. Please try again."
                     )
@@ -1061,6 +1199,7 @@ This explanation is for educational purposes only and is not a medical diagnosis
                 ).strip()
 
                 if current_medications:
+
                     medicine_prompt = f"""
 Explain the following medicines in simple English.
 
@@ -1080,6 +1219,7 @@ doctor or pharmacist.
 """
 
                     try:
+
                         medicine_response = model.generate_content(
                             medicine_prompt
                         )
@@ -1089,6 +1229,7 @@ doctor or pharmacist.
                         )
 
                     except Exception as medicine_error:
+
                         st.warning(
                             "The report was analysed, but medicine "
                             f"information could not be generated: {medicine_error}"
@@ -1096,9 +1237,11 @@ doctor or pharmacist.
 
                 progress.progress(100)
                 status.success("Analysis completed successfully!")
+
                 st.session_state.analysis_completed = True
 
             except Exception as error:
+
                 status.empty()
                 st.error(f"Gemini Error: {error}")
                 st.stop()
@@ -1128,30 +1271,40 @@ doctor or pharmacist.
     ):
 
         if not medicine_name.strip():
+
             st.warning("Please enter a medicine name first.")
 
         else:
+
             try:
+
                 with st.spinner("Preparing medicine information..."):
+
                     medicine_text = generate_medicine_information(
                         medicine_name.strip()
                     )
 
                 if medicine_text.strip():
+
                     st.session_state.latest_medicine_text = medicine_text
                     st.success("Medicine information generated.")
+
                 else:
+
                     st.error(
                         "The AI returned an empty response. Please try again."
                     )
 
             except Exception as medicine_error:
+
                 st.error(
                     f"Unable to generate medicine information: {medicine_error}"
                 )
 
     if st.session_state.latest_medicine_text:
+
         with st.container(border=True):
+
             st.markdown("#### Medicine explanation")
             st.markdown(st.session_state.latest_medicine_text)
 
@@ -1174,6 +1327,7 @@ doctor or pharmacist.
         col1, col2 = st.columns(2)
 
         with col1:
+
             st.download_button(
                 label="Download TXT Report",
                 data=st.session_state.latest_report_text,
@@ -1183,6 +1337,7 @@ doctor or pharmacist.
             )
 
         with col2:
+
             pdf_file = create_pdf(
                 st.session_state.latest_report_text
             )
@@ -1212,9 +1367,11 @@ doctor or pharmacist.
             with st.expander(
                 f"Report {index} | {item['patient']} | {item['created_at']}"
             ):
+
                 st.markdown(item["report"])
 
     else:
+
         st.info(
             "No reports have been analysed in this session yet."
         )
@@ -1246,6 +1403,7 @@ elif page == "💬 Chat with Report":
     else:
 
         for message in st.session_state.chat_history:
+
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
 
@@ -1287,9 +1445,11 @@ USER QUESTION:
 """
 
             try:
+
                 with st.chat_message("assistant"):
 
                     with st.spinner("Preparing your answer..."):
+
                         chat_response = model.generate_content(chat_prompt)
 
                         answer = (
@@ -1305,6 +1465,7 @@ USER QUESTION:
                 })
 
             except Exception as error:
+
                 st.error(f"Chat Error: {error}")
 
 
@@ -1366,6 +1527,7 @@ elif page == "⚙️ About & Privacy":
 
     st.write("MediSimplify AI")
     st.caption("Understand • Learn • Stay Informed")
+    st.markdown("**Developed by Mukesh**")
 
 
 # ============================================================
@@ -1382,5 +1544,9 @@ st.markdown("""
         AI-generated educational information only.
         Always consult a qualified healthcare professional.
     </small>
+</div>
+
+<div class="main-developer-credit">
+    Developed by <strong>Mukesh</strong>
 </div>
 """, unsafe_allow_html=True)
