@@ -1,3 +1,4 @@
+
 import streamlit as st
 from pypdf import PdfReader
 import google.generativeai as genai
@@ -261,9 +262,7 @@ default_values = {
     "latest_medicine_text": "",
     "report_history": [],
     "chat_history": [],
-    "analysis_completed": False,
-    "saved_patient_details": None,
-    "patient_details_saved_at": ""
+    "analysis_completed": False
 }
 
 for key, value in default_values.items():
@@ -430,7 +429,7 @@ st.sidebar.divider()
 st.sidebar.markdown("""
 ### How to Use
 
-1. Enter patient information.
+1. Enter patient information if desired.
 2. Add health information if desired.
 3. Upload a medical report PDF.
 4. Analyse the report.
@@ -651,49 +650,8 @@ elif page == "👤 Patient Information":
             key="family_history"
         )
 
-    st.divider()
-
-    if st.button(
-        "💾 Save Patient Details",
-        type="primary",
-        use_container_width=True,
-        key="save_patient_details_button"
-    ):
-        st.session_state.saved_patient_details = {
-            "Patient Name": st.session_state.get("patient_name", ""),
-            "Age": st.session_state.get("patient_age", 30),
-            "Gender": st.session_state.get("patient_gender", "Select"),
-            "Report Date": str(
-                st.session_state.get("report_date", date.today())
-            ),
-            "Hospital / Lab Name": st.session_state.get("hospital_name", ""),
-            "Blood Group": st.session_state.get("blood_group", "Select"),
-            "Emergency Contact Number": st.session_state.get("emergency_contact", ""),
-            "Known Allergies": st.session_state.get("allergies", ""),
-            "Previous Medical Conditions": st.session_state.get("medical_history", ""),
-            "Current Medications": st.session_state.get("current_medications", ""),
-            "Past Surgeries": st.session_state.get("past_surgeries", ""),
-            "Family Medical History": st.session_state.get("family_history", "")
-        }
-
-        st.session_state.patient_details_saved_at = datetime.now().strftime(
-            "%d %b %Y, %I:%M %p"
-        )
-
-    if st.session_state.get("saved_patient_details") is not None:
-        st.success(
-            "Patient details saved successfully! "
-            f"Saved at {st.session_state.patient_details_saved_at}."
-        )
-
-        with st.expander("View Saved Patient Details"):
-            for detail, value in st.session_state.saved_patient_details.items():
-                display_value = value if value not in (None, "") else "Not provided"
-                st.write(f"**{detail}:** {display_value}")
-
-    st.caption(
-        "Patient details are saved within the current Streamlit session. "
-        "They are not permanently stored in a database."
+    st.success(
+        "Patient information is maintained in the current Streamlit session."
     )
 
 
@@ -923,28 +881,32 @@ elif page == "📄 Medical Report Analysis":
             use_container_width=True
         ):
 
-            patient_name = st.session_state.get(
-                "patient_name", ""
-            ).strip()
+            # PATIENT INFORMATION IS OPTIONAL.
+            # Missing values will be shown as "Not provided".
+
+            patient_name = (
+                st.session_state.get("patient_name", "").strip()
+                or "Not provided"
+            )
 
             patient_gender = st.session_state.get(
                 "patient_gender", "Select"
             )
 
-            hospital_name = st.session_state.get(
-                "hospital_name", ""
-            ).strip()
+            if patient_gender == "Select" or not patient_gender:
+                patient_gender = "Not provided"
 
-            if (
-                not patient_name
-                or not hospital_name
-                or patient_gender == "Select"
-            ):
-                st.warning(
-                    "Please enter Patient Name, Gender and Hospital/Lab "
-                    "in the Patient Information section first."
-                )
-                st.stop()
+            hospital_name = (
+                st.session_state.get("hospital_name", "").strip()
+                or "Not provided"
+            )
+
+            blood_group = st.session_state.get(
+                "blood_group", "Select"
+            )
+
+            if blood_group == "Select":
+                blood_group = "Not provided"
 
             report_text_input = extracted_text[:12000]
 
@@ -973,27 +935,27 @@ IMPORTANT RULES:
 PATIENT INFORMATION:
 
 Name: {patient_name}
-Age: {st.session_state.get("patient_age", 30)}
+Age: {st.session_state.get("patient_age", "Not provided")}
 Gender: {patient_gender}
 Report Date: {st.session_state.get("report_date", date.today())}
 Hospital/Lab: {hospital_name}
-Blood Group: {st.session_state.get("blood_group", "Not provided")}
+Blood Group: {blood_group}
 BMI: {bmi_value:.2f}
 
 Allergies:
-{st.session_state.get("allergies", "")}
+{st.session_state.get("allergies", "Not provided")}
 
 Medical History:
-{st.session_state.get("medical_history", "")}
+{st.session_state.get("medical_history", "Not provided")}
 
 Current Medications:
-{st.session_state.get("current_medications", "")}
+{st.session_state.get("current_medications", "Not provided")}
 
 Past Surgeries:
-{st.session_state.get("past_surgeries", "")}
+{st.session_state.get("past_surgeries", "Not provided")}
 
 Family History:
-{st.session_state.get("family_history", "")}
+{st.session_state.get("family_history", "Not provided")}
 
 LIFESTYLE:
 
