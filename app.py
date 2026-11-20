@@ -261,7 +261,9 @@ default_values = {
     "latest_medicine_text": "",
     "report_history": [],
     "chat_history": [],
-    "analysis_completed": False
+    "analysis_completed": False,
+    "saved_patient_details": None,
+    "patient_details_saved_at": ""
 }
 
 for key, value in default_values.items():
@@ -649,8 +651,49 @@ elif page == "👤 Patient Information":
             key="family_history"
         )
 
-    st.success(
-        "Patient information is maintained in the current Streamlit session."
+    st.divider()
+
+    if st.button(
+        "💾 Save Patient Details",
+        type="primary",
+        use_container_width=True,
+        key="save_patient_details_button"
+    ):
+        st.session_state.saved_patient_details = {
+            "Patient Name": st.session_state.get("patient_name", ""),
+            "Age": st.session_state.get("patient_age", 30),
+            "Gender": st.session_state.get("patient_gender", "Select"),
+            "Report Date": str(
+                st.session_state.get("report_date", date.today())
+            ),
+            "Hospital / Lab Name": st.session_state.get("hospital_name", ""),
+            "Blood Group": st.session_state.get("blood_group", "Select"),
+            "Emergency Contact Number": st.session_state.get("emergency_contact", ""),
+            "Known Allergies": st.session_state.get("allergies", ""),
+            "Previous Medical Conditions": st.session_state.get("medical_history", ""),
+            "Current Medications": st.session_state.get("current_medications", ""),
+            "Past Surgeries": st.session_state.get("past_surgeries", ""),
+            "Family Medical History": st.session_state.get("family_history", "")
+        }
+
+        st.session_state.patient_details_saved_at = datetime.now().strftime(
+            "%d %b %Y, %I:%M %p"
+        )
+
+    if st.session_state.get("saved_patient_details") is not None:
+        st.success(
+            "Patient details saved successfully! "
+            f"Saved at {st.session_state.patient_details_saved_at}."
+        )
+
+        with st.expander("View Saved Patient Details"):
+            for detail, value in st.session_state.saved_patient_details.items():
+                display_value = value if value not in (None, "") else "Not provided"
+                st.write(f"**{detail}:** {display_value}")
+
+    st.caption(
+        "Patient details are saved within the current Streamlit session. "
+        "They are not permanently stored in a database."
     )
 
 
