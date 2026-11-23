@@ -6,7 +6,7 @@ import pymupdf
 
 from PIL import Image
 
-import google.generativeai as genai
+from google import genai
 
 from dotenv import load_dotenv
 
@@ -547,9 +547,9 @@ if not api_key:
 
     st.stop()
 
-genai.configure(api_key=api_key)
+client = genai.Client(api_key=api_key)
 
-model = genai.GenerativeModel("gemini-2.5-flash")
+GEMINI_MODEL = "gemini-2.5-flash"
 
 # ============================================================
 
@@ -779,9 +779,11 @@ def extract_medical_document_text(uploaded_file):
 
             try:
 
-                ocr_response = model.generate_content(
+                ocr_response = client.models.generate_content(
 
-                    [ocr_prompt, page_image]
+                    model=GEMINI_MODEL,
+
+                    contents=[ocr_prompt, page_image]
 
                 )
 
@@ -831,9 +833,11 @@ def extract_medical_document_text(uploaded_file):
 
         try:
 
-            ocr_response = model.generate_content(
+            ocr_response = client.models.generate_content(
 
-                [ocr_prompt, document_image]
+                model=GEMINI_MODEL,
+
+                contents=[ocr_prompt, document_image]
 
             )
 
@@ -891,7 +895,7 @@ healthcare professional.
 
 """
 
-    response = model.generate_content(medicine_prompt)
+    response = client.models.generate_content(model=GEMINI_MODEL, contents=medicine_prompt)
 
     return response.text or ""
 
@@ -1933,59 +1937,95 @@ MEDICAL REPORT TEXT:
 
 {report_text_input}
 
-Prepare the explanation using these sections.
+Prepare the explanation using the following sections.
 
-Use each heading exactly once. Keep the content concise and readable.
+Use each heading exactly once. Keep the content concise, clear and readable.
+Use Markdown bullets or short paragraphs. Do not use empty bullet points.
 
-Do not use empty bullet points.
+For every laboratory result, copy the exact value, unit and reference range
+from the report when available. Use the laboratory's own reference interval.
+Do not apply a generic range when the report does not provide one.
+If a reference range is missing, state that the range was not provided and
+do not classify the result as high, low or normal unless the report itself
+explicitly flags it. Preserve the report's wording and units.
+Do not treat a borderline result as a diagnosis.
 
 ## Simple Summary
 
 Explain the report in simple English in 2-4 complete sentences.
+Briefly state the main purpose of the report and its most important findings.
 
-## Important Findings
+## Concerning Factors
 
-List the important values and observations.
+List findings that may deserve attention or follow-up.
+For each item, state the test/finding, exact reported value if applicable,
+the report's flag or reference range, and why it may matter.
+Do not imply that every abnormal result is dangerous.
+If no concerning factor is identified from the supplied report, say so.
 
-Include reference ranges when present in the report.
+## Above Reference Range (High)
 
-## Abnormal Values
+List only results that are above the reference range printed in the report
+or explicitly marked high by the laboratory.
+For each result include:
+- Test name
+- Reported value and unit
+- Laboratory reference range
+- Simple explanation of what an above-range result can indicate
+If none are identified, write: "No above-range results were identified
+from the information provided."
 
-Explain values marked high, low or abnormal by the report.
+## Below Reference Range (Low)
 
-Do not independently label a value abnormal without sufficient context.
+List only results that are below the reference range printed in the report
+or explicitly marked low by the laboratory.
+For each result include:
+- Test name
+- Reported value and unit
+- Laboratory reference range
+- Simple explanation of what a below-range result can indicate
+If none are identified, write: "No below-range results were identified
+from the information provided."
 
-## What It Means
+## Within Reference Range (Normal)
 
-Explain the possible meaning of the findings.
+List results that fall within the reference ranges printed in the report.
+Include the test name, reported value and unit where legible.
+Do not call the entire report normal based only on these results.
+If no reference ranges are available to confirm normal results, say so.
 
-Avoid making a diagnosis.
+## Other Important Findings
+
+Explain relevant observations, comments, imaging descriptions or report
+conclusions that are not appropriately classified as high or low.
+Do not repeat information already explained above.
+
+## What These Results May Mean
+
+Explain possible meanings in simple language without diagnosing.
+Mention that results need to be interpreted alongside symptoms, history,
+medications and clinical examination.
 
 ## Follow-up Guidance
 
-Explain which findings may need routine follow-up,
-
-prompt medical review or urgent medical attention.
-
+Separate guidance into:
+- Routine follow-up: findings to discuss at a planned appointment.
+- Prompt medical review: findings that warrant contacting a healthcare
+  professional sooner, based on the report and context.
+- Urgent attention: only when the report itself or reliable clinical
+  context indicates a potential emergency; advise emergency services
+  for severe or rapidly worsening symptoms.
 Do not claim that this automated explanation can rule out emergencies.
-
-## Diet Suggestions
-
-Provide general and relevant suggestions.
-
-Do not claim that diet can treat or cure a disease.
-
-## Lifestyle Suggestions
-
-Give general suggestions based on the provided lifestyle information.
 
 ## Questions to Ask Your Doctor
 
-Provide five useful questions based on the report.
+Provide five useful questions based on the report's actual findings.
 
 ## Important Limitations
 
-Mention any missing information or limitations that affect interpretation.
+Mention missing values, unclear text, absent reference ranges or other
+limitations that affect interpretation. State clearly when a result could
+not be classified because its reference range was not supplied.
 
 End with:
 
@@ -2005,7 +2045,7 @@ This explanation is for educational purposes only and is not a medical diagnosis
 
                 status.info("Step 2 of 3: Analysing the report with AI...")
 
-                response = model.generate_content(prompt)
+                response = client.models.generate_content(model=GEMINI_MODEL, contents=prompt)
 
                 report_text = clean_report_markdown(
 
@@ -2091,9 +2131,11 @@ doctor or pharmacist.
 
                     try:
 
-                        medicine_response = model.generate_content(
+                        medicine_response = client.models.generate_content(
 
-                            medicine_prompt
+                            model=GEMINI_MODEL,
+
+                            contents=medicine_prompt
 
                         )
 
@@ -2407,7 +2449,7 @@ USER QUESTION:
 
                     with st.spinner("Preparing your answer..."):
 
-                        chat_response = model.generate_content(chat_prompt)
+                        chat_response = client.models.generate_content(model=GEMINI_MODEL, contents=chat_prompt)
 
                         answer = (
 
