@@ -605,73 +605,95 @@ def create_pdf(report_text):
 
     return buffer
 
-def display_organized_report(report_text):
-
-    sections = re.split(
-
-        r"(?=^##\s+)",
-
-        report_text,
-
-        flags=re.MULTILINE
-
-    )
-
-    displayed_sections = 0
-
-    for section in sections:
-
-        section = section.strip()
-
-        if not section:
-
-            continue
-
-        lines = section.split("\n")
-
-        heading = lines[0].replace("##", "").strip()
-
-        content = "\n".join(lines[1:]).strip()
-
-        if heading:
-
-            displayed_sections += 1
-
-            with st.expander(
-
-                f"📌 {heading}",
-
-                expanded=(displayed_sections == 1)
-
-            ):
-
-                st.markdown(content)
-
-    if displayed_sections == 0:
-
-        st.markdown(report_text)
-
 def clean_report_markdown(report_text):
-    """Remove empty bullets and common formatting artefacts from AI output."""
-    cleaned_lines = []
+    """Normalize Gemini output into valid, readable Markdown."""
+    if not report_text:
+        return ""
 
-    for raw_line in report_text.splitlines():
-        line = raw_line.rstrip()
+    cleaned = str(report_text).strip()
 
-        if re.match(r"^\\s*[-*•]\\s*$", line):
-            continue
+    # Gemini may return escaped line breaks as the literal characters \\n.
+    # Convert those into real line breaks before Markdown rendering.
+    cleaned = cleaned.replace("\\r\\n", "\n")
+    cleaned = cleaned.replace("\\n", "\n")
+    cleaned = cleaned.replace("\\r", "\n")
+    cleaned = cleaned.replace("\\t", "    ")
 
-        if re.match(r"^\\s*\\d+[.)]\\s*$", line):
-            continue
+    # Remove escaping before common Markdown characters.
+    cleaned = re.sub(r"\\([#*_\-\[\]()])", r"\1", cleaned)
 
-        line = re.sub(r"^\\s*[•]\\s*", "- ", line)
-        cleaned_lines.append(line)
+    # Standardize bullet characters and remove empty list items.
+    cleaned = re.sub(r"(?m)^\s*[•▪◦]\s*", "- ", cleaned)
+    cleaned = re.sub(r"(?m)^\s*[-*]\s*$", "", cleaned)
+    cleaned = re.sub(r"(?m)^\s*\d+[.)]\s*$", "", cleaned)
 
-    cleaned = "\\n".join(cleaned_lines)
-    cleaned = re.sub(r"\\n{3,}", "\\n\\n", cleaned)
+    # Keep paragraphs readable without excessive blank lines.
+    cleaned = re.sub(r"\n[ \t]+\n", "\n\n", cleaned)
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
 
     return cleaned.strip()
 
+
+def display_organized_report(report_text):
+    """Render each requested medical-report section in its own expander."""
+    headings = [
+        "Simple Summary",
+        "Concerning Factors",
+        "Above Reference Range (High)",
+        "Below Reference Range (Low)",
+        "Within Reference Range (Normal)",
+        "Other Important Findings",
+        "What These Results May Mean",
+        "Follow-up Guidance",
+        "Questions to Ask Your Doctor",
+        "Important Limitations",
+    ]
+
+    report_text = clean_report_markdown(report_text)
+
+    # Accept headings with or without Markdown hashes, bold markers,
+    # a leading pin emoji, or a trailing colon.
+    for heading in headings:
+        escaped_heading = re.escape(heading)
+        heading_pattern = (
+            r"(?im)^\s*(?:#{1,6}\s*)?(?:📌\s*)?(?:\*\*)?"
+            + escaped_heading
+            + r"(?:\*\*)?\s*:?\s*$"
+        )
+        report_text = re.sub(
+            heading_pattern,
+            "## " + heading,
+            report_text,
+        )
+
+    sections = re.split(r"(?m)^##\s+", report_text)
+    displayed_sections = 0
+
+    for section in sections:
+        section = section.strip()
+        if not section:
+            continue
+
+        lines = section.splitlines()
+        heading = lines[0].strip()
+        content = "\n".join(lines[1:]).strip()
+
+        if heading in headings:
+            displayed_sections += 1
+            with st.expander(
+                f"📌 {heading}",
+                expanded=(displayed_sections == 1),
+            ):
+                if content:
+                    st.markdown(content)
+                else:
+                    st.info("No information was provided in this section.")
+        else:
+            # Preserve any introductory text or unrecognized content.
+            st.markdown(section)
+
+    if displayed_sections == 0:
+        st.markdown(report_text)
 
 def extract_patient_name(report_text):
     """Extract a name only when the PDF clearly labels it as patient name."""
