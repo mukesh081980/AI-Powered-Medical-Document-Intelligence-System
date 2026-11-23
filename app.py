@@ -1,3 +1,5 @@
+import database
+
 import streamlit as st
 
 from pypdf import PdfReader
@@ -1193,7 +1195,7 @@ if page == "🏠 Dashboard":
 
                     key=f"dashboard_open_{row_index}_{card[1]}",
 
-                    use_container_width=True,
+                    width="stretch",
 
                     on_click=navigate_dashboard,
 
@@ -1257,16 +1259,14 @@ if page == "🏠 Dashboard":
 
 # ============================================================
 
+
 elif page == "👤 Patient Information":
 
     st.title("👤 Patient Information")
 
     st.write(
-
         "Enter basic patient details. These details can be used "
-
         "to provide context when explaining the uploaded report."
-
     )
 
     with st.container(border=True):
@@ -1278,73 +1278,45 @@ elif page == "👤 Patient Information":
         with col1:
 
             st.text_input(
-
                 "Patient Name",
-
                 key="patient_name"
-
             )
 
             st.number_input(
-
                 "Age",
-
                 min_value=1,
-
                 max_value=120,
-
                 value=30,
-
                 step=1,
-
                 key="patient_age"
-
             )
 
             st.selectbox(
-
                 "Gender",
-
                 ["Select", "Male", "Female", "Other"],
-
                 key="patient_gender"
-
             )
 
         with col2:
 
             st.date_input(
-
                 "Report Date",
-
                 value=date.today(),
-
                 key="report_date"
-
             )
 
             st.text_input(
-
                 "Hospital / Lab Name",
-
                 key="hospital_name"
-
             )
 
             st.selectbox(
-
                 "Blood Group",
-
                 [
-
                     "Select", "A+", "A-", "B+", "B-",
-
                     "AB+", "AB-", "O+", "O-"
-
                 ],
-
                 key="blood_group"
-
             )
 
     with st.container(border=True):
@@ -1352,70 +1324,118 @@ elif page == "👤 Patient Information":
         st.subheader("Additional Information")
 
         st.text_input(
-
             "Emergency Contact Number",
-
             placeholder="Enter emergency contact number",
-
             key="emergency_contact"
-
         )
 
         st.text_area(
-
             "Known Allergies",
-
             placeholder="Example: Penicillin, peanuts, dust allergy",
-
             key="allergies"
-
         )
 
         st.text_area(
-
             "Previous Medical Conditions",
-
             placeholder="Example: Diabetes, hypertension, asthma",
-
             key="medical_history"
-
         )
 
         st.text_area(
-
             "Current Medications",
-
             placeholder="Enter currently prescribed medicines",
-
             key="current_medications"
-
         )
 
         st.text_area(
-
             "Past Surgeries",
-
             placeholder="Enter previous surgery details if applicable",
-
             key="past_surgeries"
-
         )
 
         st.text_area(
-
             "Family Medical History",
-
             placeholder="Enter relevant family medical history",
-
             key="family_history"
-
         )
 
-    st.success(
+    st.divider()
 
-        "Patient information is maintained in the current Streamlit session."
+    if st.button("Save Patient Details", type="primary"):
 
-    )
+        patient_name = st.session_state.get("patient_name", "").strip()
+
+        if not patient_name:
+
+            st.error("Please enter the patient name.")
+
+        else:
+
+            try:
+
+                patient_id = database.add_patient(
+                    name=patient_name,
+                    age=st.session_state.get("patient_age"),
+                    gender=(
+                        st.session_state.get("patient_gender")
+                        if st.session_state.get("patient_gender") != "Select"
+                        else None
+                    ),
+                    report_date=st.session_state.get("report_date"),
+                    hospital_name=st.session_state.get("hospital_name"),
+                    blood_group=(
+                        st.session_state.get("blood_group")
+                        if st.session_state.get("blood_group") != "Select"
+                        else None
+                    ),
+                    emergency_contact=st.session_state.get("emergency_contact"),
+                    allergies=st.session_state.get("allergies"),
+                    medical_history=st.session_state.get("medical_history"),
+                    medications=st.session_state.get("current_medications"),
+                    past_surgeries=st.session_state.get("past_surgeries"),
+                    family_history=st.session_state.get("family_history")
+                )
+
+                if patient_id:
+
+                    st.session_state["saved_patient_id"] = patient_id
+
+                    st.success(
+                        f"Patient details saved successfully! Patient ID: {patient_id}"
+                    )
+
+                else:
+
+                    st.error(
+                        "Unable to save patient details. Please check MySQL connection."
+                    )
+
+            except Exception as error:
+
+                st.error(f"Error saving patient: {error}")
+
+    st.divider()
+
+    st.subheader("Saved Patient Records")
+
+    try:
+
+        patients = database.get_patients()
+
+        if patients:
+
+           st.dataframe(
+    patients,
+    width="stretch",
+    hide_index=True
+)
+        else:
+
+            st.info("No patient records found in the database.")
+
+    except Exception as error:
+
+        st.error(f"Unable to retrieve patient records: {error}")
 
 # ============================================================
 
@@ -1791,7 +1811,7 @@ elif page == "📄 Medical Report Analysis":
 
             type="primary",
 
-            use_container_width=True
+            width="stretch"
 
         ):
 
@@ -2225,7 +2245,7 @@ doctor or pharmacist.
 
         key="generate_medicine_button",
 
-        use_container_width=True
+        width="stretch"
 
     ):
 
@@ -2311,7 +2331,7 @@ doctor or pharmacist.
 
                 mime="text/plain",
 
-                use_container_width=True
+                width="stretch"
 
             )
 
@@ -2333,7 +2353,7 @@ doctor or pharmacist.
 
                 mime="application/pdf",
 
-                use_container_width=True
+                width="stretch"
 
             )
 
