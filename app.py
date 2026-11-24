@@ -1,5 +1,7 @@
 import database
 
+import auth
+
 import streamlit as st
 
 from pypdf import PdfReader
@@ -37,7 +39,7 @@ st.set_page_config(
 
     page_title="MediSimplify AI | Medical Report Simplifier",
 
-    page_icon="🏥",
+    page_icon="M",
 
     layout="wide",
 
@@ -485,6 +487,93 @@ div[data-testid="stMetricValue"] {
 
 }
 
+
+/* FINAL VISUAL POLISH — presentation only; application logic unchanged */
+:root{--navy:#12304A;--navy-2:#1A4560;--teal:#078B8C;--teal-dark:#067477;--mint:#E9F7F5;--ink:#203747;--muted:#718391;--line:#E1EAEF;--surface:#FFF;--page:#F4F8FA}
+.stApp{background:radial-gradient(ellipse at 88% 0%,rgba(8,139,140,.055),transparent 34%),var(--page)}
+[data-testid="stHeader"]{background:rgba(244,248,250,.82);backdrop-filter:blur(12px)}
+.block-container{max-width:1500px;padding-top:1.35rem;padding-bottom:3.5rem}
+[data-testid="stSidebar"]{background:linear-gradient(165deg,#102B43 0%,#163D55 58%,#075D66 100%);border-right:1px solid rgba(255,255,255,.08)}
+[data-testid="stSidebar"]>div:first-child{padding-top:1.25rem}
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h1,[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h2,[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3{color:#fff!important}
+[data-testid="stSidebar"] [data-testid="stRadio"]>div{gap:7px}
+[data-testid="stSidebar"] [data-testid="stRadio"] label{border:1px solid transparent;border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.045);transition:background .18s,border-color .18s,transform .18s}
+[data-testid="stSidebar"] [data-testid="stRadio"] label:hover{background:rgba(255,255,255,.105);border-color:rgba(145,230,223,.25);transform:translateX(2px)}
+[data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked){background:linear-gradient(100deg,rgba(12,164,158,.30),rgba(255,255,255,.09));border-color:rgba(133,230,220,.38)}
+h1,h2,h3,h4{color:var(--navy)!important;letter-spacing:-.025em}
+h1{font-size:clamp(1.8rem,3vw,2.45rem)!important;font-weight:780!important}
+h2{font-size:clamp(1.35rem,2vw,1.75rem)!important;font-weight:730!important}
+h3{font-size:1.16rem!important;font-weight:720!important}
+p,li,label{color:var(--ink)}
+[data-testid="stCaptionContainer"] p,.stMarkdown small{color:var(--muted)!important}
+[data-testid="stVerticalBlockBorderWrapper"],[data-testid="stExpander"],[data-testid="stForm"],[data-testid="stDataFrame"],[data-testid="stTable"]{border-color:var(--line)!important;border-radius:16px!important}
+[data-testid="stMetric"]{background:rgba(255,255,255,.96)!important;border:1px solid var(--line)!important;border-radius:17px!important;padding:17px 19px!important;box-shadow:0 7px 22px rgba(20,54,75,.045)!important;transition:transform .18s,box-shadow .18s}
+[data-testid="stMetric"]:hover{transform:translateY(-2px);box-shadow:0 11px 26px rgba(20,54,75,.075)!important}
+[data-testid="stMetricLabel"]{color:var(--muted)!important;font-size:.83rem!important;font-weight:620!important}
+[data-testid="stMetricValue"]{color:var(--navy)!important;font-weight:780!important}
+.stButton>button,.stDownloadButton>button,[data-testid="stFormSubmitButton"] button{border-radius:12px!important;min-height:2.75rem;font-weight:680!important;transition:transform .18s,box-shadow .18s,background .18s}
+.stButton>button[kind="primary"],.stDownloadButton>button[kind="primary"],[data-testid="stFormSubmitButton"] button[kind="primary"]{background:linear-gradient(110deg,#087F86,#0B9C98)!important;border:0!important;color:#fff!important;box-shadow:0 6px 16px rgba(8,127,134,.19)}
+.stButton>button:hover,.stDownloadButton>button:hover,[data-testid="stFormSubmitButton"] button:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(16,43,70,.12)}
+.stTextInput input,.stNumberInput input,.stTextArea textarea,[data-baseweb="select"]>div,[data-testid="stDateInput"] input{border-radius:11px!important;border-color:#D8E4E9!important;background:#fff!important}
+.stTextInput input:focus,.stNumberInput input:focus,.stTextArea textarea:focus{border-color:#0B9997!important;box-shadow:0 0 0 3px rgba(11,153,151,.10)!important}
+[data-testid="stFileUploader"] section{background:linear-gradient(135deg,#F0FAF9,#F8FCFC)!important;border:1.5px dashed #82C7C4!important;border-radius:16px!important;padding:1.1rem!important}
+[data-testid="stExpander"]{background:#fff!important;border:1px solid var(--line)!important;border-radius:14px!important;overflow:hidden}
+[data-testid="stExpander"] summary{font-weight:650}
+[data-testid="stTabs"] [data-baseweb="tab-list"]{gap:7px;border-bottom:1px solid var(--line)}
+[data-testid="stTabs"] button[role="tab"]{border-radius:10px 10px 0 0;padding:10px 15px;font-weight:650}
+[data-testid="stTabs"] button[aria-selected="true"]{color:var(--teal-dark)!important}
+[data-testid="stAlert"]{border-radius:13px!important}
+[data-testid="stChatMessage"]{border:1px solid var(--line);border-radius:16px;padding:13px 16px;background:rgba(255,255,255,.86);margin-bottom:10px}
+[data-testid="stDataFrame"]{background:#fff;border:1px solid var(--line);overflow:hidden}
+hr{border-color:var(--line)!important;opacity:.9}
+.hero,.page-hero{border-radius:22px!important;box-shadow:0 14px 34px rgba(16,43,70,.11)!important}
+.feature-card{border-radius:17px!important;border:1px solid var(--line)!important;box-shadow:0 7px 22px rgba(20,54,75,.045)!important;transition:transform .18s,box-shadow .18s}
+.feature-card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(20,54,75,.085)!important}
+.footer{border-top:1px solid var(--line);margin-top:2rem;padding-top:1.5rem}
+@media(max-width:900px){.block-container{padding-left:1.15rem;padding-right:1.15rem}}
+@media(max-width:640px){.block-container{padding-top:.9rem;padding-left:.85rem;padding-right:.85rem}.hero,.page-hero{padding:24px 20px!important;border-radius:17px!important}[data-testid="stMetric"]{padding:13px!important}[data-testid="stChatMessage"]{padding:10px 12px}}
+
+
+/* Distinct healthcare dashboard layout and shared app polish */
+.dashboard-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:28px;min-height:285px;padding:38px 42px;margin:8px 0 30px;border-radius:25px;background:linear-gradient(112deg,#102F49 0%,#174A61 56%,#087F83 100%);box-shadow:0 18px 42px rgba(16,47,73,.16);color:#fff}
+.dashboard-hero-copy{position:relative;z-index:2;max-width:690px}
+.dashboard-eyebrow{font-size:.72rem;font-weight:800;letter-spacing:.19em;color:#8FE6D9;margin-bottom:17px}
+.dashboard-hero h1{font-size:clamp(2rem,3.6vw,3.15rem)!important;line-height:1.12!important;letter-spacing:-.045em;color:#fff!important;margin:0 0 15px}
+.dashboard-hero h1 span{color:#8FE6D9}
+.dashboard-hero p{max-width:610px;color:rgba(255,255,255,.83)!important;font-size:1rem;line-height:1.75;margin:0}
+.dashboard-trust{margin-top:22px;color:#C5F3EA;font-size:.78rem;font-weight:650;letter-spacing:.02em}
+.dashboard-hero-art{position:relative;flex:0 0 270px;height:210px;display:flex;align-items:center;justify-content:center}
+.dashboard-orbit{position:absolute;border:1px solid rgba(166,239,229,.25);border-radius:50%;width:205px;height:205px}
+.orbit-two{width:155px;height:155px;border-style:dashed}
+.dashboard-medical-icon{width:104px;height:104px;display:flex;align-items:center;justify-content:center;border-radius:32px;background:linear-gradient(145deg,rgba(255,255,255,.25),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.28);box-shadow:0 15px 35px rgba(0,0,0,.14);font-size:4.1rem;color:#fff}
+.dashboard-float-card{position:absolute;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.96);color:#164257;font-size:.76rem;font-weight:750;box-shadow:0 9px 24px rgba(0,0,0,.13);white-space:nowrap}
+.float-top{top:18px;right:-5px}.float-bottom{bottom:15px;left:-5px}
+.dashboard-section-head{display:flex;align-items:end;justify-content:space-between;margin:25px 0 15px}
+.dashboard-section-head h3{font-size:1.35rem!important;margin:4px 0!important;color:#15364D!important}
+.dashboard-section-head p{margin:4px 0 0;color:#718391!important;font-size:.9rem}
+.section-kicker{font-size:.68rem;font-weight:850;letter-spacing:.17em;color:#078B8C}
+.service-tile{height:190px;box-sizing:border-box;padding:21px 21px 17px;border:1px solid #E1EAEF;border-radius:19px;background:#fff;box-shadow:0 7px 22px rgba(20,54,75,.045);transition:transform .18s,box-shadow .18s;margin-bottom:9px}
+.service-tile:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(20,54,75,.09)}
+.service-icon{width:46px;height:46px;display:flex;align-items:center;justify-content:center;border-radius:14px;font-size:1.45rem;background:#E8F6F4;margin-bottom:15px}
+.service-title{font-size:1.02rem;font-weight:780;color:#17384E;margin-bottom:7px;text-transform:capitalize}
+.service-description{font-size:.83rem;line-height:1.55;color:#718391}
+.service-mint .service-icon{background:#E5F6F0}.service-lilac .service-icon{background:#F1ECFC}.service-blue .service-icon{background:#EAF1FC}.service-rose .service-icon{background:#FCECEF}.service-sand .service-icon{background:#FFF3E3}
+.dashboard-bottom-note{display:flex;gap:14px;align-items:flex-start;margin-top:27px;padding:17px 20px;border:1px solid #DDEBEA;border-radius:16px;background:linear-gradient(100deg,#F0FAF8,#F8FBFC)}
+.bottom-note-icon{width:32px;height:32px;flex:0 0 32px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:#DDF2EF;color:#087F83;font-weight:800}
+.dashboard-bottom-note strong{color:#174258;font-size:.9rem}.dashboard-bottom-note p{margin:3px 0 0;color:#6D818D;font-size:.82rem;line-height:1.5}
+[data-testid="stMetric"]{background:#fff!important;border:1px solid #E1EAEF!important;border-radius:16px!important;padding:15px 18px!important;box-shadow:0 6px 20px rgba(20,54,75,.04)!important}
+[data-testid="stSidebar"]{background:linear-gradient(165deg,#102B43,#16445B 65%,#08777A)!important}
+[data-testid="stSidebar"] [data-testid="stRadio"] label{border-radius:11px;padding:9px 11px;transition:all .18s}
+.stButton>button{border-radius:11px!important;font-weight:700!important;min-height:2.55rem}
+.stButton>button[kind="primary"]{background:linear-gradient(110deg,#087F86,#0B9C98)!important;border:0!important}
+@media(max-width:850px){.dashboard-hero{padding:30px 26px}.dashboard-hero-art{flex-basis:190px;transform:scale(.82);margin-right:-20px}}
+@media(max-width:650px){.dashboard-hero{min-height:0;padding:27px 22px}.dashboard-hero-art{display:none}.dashboard-hero h1{font-size:2rem!important}.service-tile{height:170px;padding:16px}.dashboard-section-head{margin-top:22px}}
+
+
+.admin-user-hero .hero-eyebrow{font-size:clamp(2.1rem,3.2vw,2.8rem)!important;font-weight:800!important;letter-spacing:-.045em!important;line-height:1.12!important}
+.admin-user-hero h1{font-size:clamp(2.1rem,3.2vw,2.8rem)!important;font-weight:800!important;letter-spacing:-.045em!important;line-height:1.12!important;margin:.45rem 0 .65rem!important}
+.admin-user-hero p{font-size:1rem!important;font-weight:450!important;line-height:1.65!important;max-width:720px!important}
+
 </style>
 
 """, unsafe_allow_html=True)
@@ -928,6 +1017,659 @@ healthcare professional.
 # SIDEBAR NAVIGATION
 
 # ============================================================
+# AUTHENTICATION AND ROLE PROTECTION
+# ============================================================
+
+if not st.session_state.get("authenticated", False):
+
+    auth.login_screen()
+    st.stop()
+
+
+current_user = st.session_state.get("user", {})
+# VERIFY CURRENT ACCOUNT STATUS
+verified_user = database.get_active_user(
+    current_user.get("user_id")
+)
+
+if not verified_user:
+    st.session_state.clear()
+    st.error("Your account is inactive or unavailable. Please log in again.")
+    st.stop()
+
+st.session_state["user"] = verified_user
+current_user = verified_user
+
+# Allow only Admin into the existing application for now
+
+# ============================================================
+# DOCTOR DASHBOARD
+# ============================================================
+
+if current_user.get("role") == "doctor":
+
+    doctor_id = current_user["user_id"]
+
+    st.title("Doctor Dashboard")
+    st.caption("MediSimplify AI | Doctor Workspace")
+
+    st.write(f"Doctor: {current_user.get('username')}")
+    st.divider()
+
+    st.subheader("My Assigned Patients")
+
+    assigned_patients = database.get_doctor_assigned_patients(
+        doctor_id
+    )
+
+    if assigned_patients:
+
+        st.success(
+            f"You have {len(assigned_patients)} assigned patient(s)."
+        )
+
+        patient_options = {
+            f'{p["patient_name"]} (ID: {p["patient_id"]})':
+            p["patient_id"]
+            for p in assigned_patients
+        }
+
+        selected_patient = st.selectbox(
+            "Select a patient",
+            list(patient_options.keys())
+        )
+
+        patient_id = patient_options[selected_patient]
+
+        # PATIENT DETAILS
+        patient = database.get_doctor_patient_details(
+            doctor_id, patient_id
+        )
+
+        if patient:
+
+            st.divider()
+            st.subheader("Patient Information")
+
+            st.write(f'**Name:** {patient.get("patient_name")}')
+            st.write(f'**Age:** {patient.get("age")}')
+            st.write(f'**Gender:** {patient.get("gender")}')
+            st.write(f'**Blood Group:** {patient.get("blood_group")}')
+            st.write(f'**Allergies:** {patient.get("allergies")}')
+            st.write(
+                f'**Medical History:** '
+                f'{patient.get("medical_history")}'
+            )
+
+            # VITAL SIGNS
+            st.divider()
+            st.subheader("Vital Signs")
+
+            vitals = database.get_doctor_patient_vitals(
+                doctor_id, patient_id
+            )
+
+            if vitals:
+                st.dataframe(
+                    vitals,
+                    use_container_width=True,
+                    hide_index=True
+                )
+            else:
+                st.info("No vital signs recorded for this patient.")
+
+            # MEDICAL REPORTS
+            st.divider()
+            st.subheader("Medical Reports")
+
+            reports = database.get_doctor_patient_reports(
+                doctor_id, patient_id
+            )
+
+            if reports:
+
+                for report in reports:
+
+                    with st.expander(
+                        f'Report {report["report_id"]} - '
+                        f'{report.get("file_name") or "Medical Report"}'
+                    ):
+
+                        st.write(
+                            f'**Report Date:** '
+                            f'{report.get("report_date")}'
+                        )
+
+                        st.write(
+                            f'**Hospital:** '
+                            f'{report.get("hospital_name")}'
+                        )
+
+                        st.markdown("**Extracted Report Text**")
+                        st.text(report.get("extracted_text") or
+                                "No extracted text available.")
+
+                        st.markdown("**AI Explanation**")
+                        st.write(
+                            report.get("ai_explanation") or
+                            "No AI explanation available."
+                        )
+
+            else:
+                st.info("No medical reports available.")
+
+        else:
+            st.error("Patient access could not be verified.")
+
+    else:
+        st.info("No patients have been assigned to you yet.")
+
+    st.divider()
+
+    if st.button("Logout", use_container_width=True):
+        st.session_state.clear()
+        st.rerun()
+
+    st.stop()
+
+
+# ============================================================
+# MEDISIMPLIFY AI - PREMIUM PATIENT DASHBOARD
+# ============================================================
+
+if current_user.get("role") == "patient":
+
+    # --------------------------------------------------------
+    # PATIENT DATA
+    # --------------------------------------------------------
+
+    patient_user_id = current_user["user_id"]
+
+    profile = database.get_patient_profile(patient_user_id)
+
+    vitals = database.get_patient_vitals(patient_user_id)
+
+    reports = database.get_patient_reports(patient_user_id)
+
+    # --------------------------------------------------------
+    # DASHBOARD THEME
+    # --------------------------------------------------------
+
+    st.markdown("""
+    <style>
+
+    .stApp {
+        background-color: #F4F7FB;
+    }
+
+    .main .block-container {
+        padding-top: 1.8rem;
+        padding-bottom: 3rem;
+        max-width: 1400px;
+    }
+
+    .patient-banner {
+        background: linear-gradient(120deg, #102A43, #0F766E);
+        padding: 35px;
+        border-radius: 18px;
+        margin-bottom: 25px;
+        color: white;
+    }
+
+    .patient-banner h1 {
+        color: white;
+        font-size: 31px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .patient-banner p {
+        color: #D8F3F0;
+        font-size: 15px;
+        margin-bottom: 0;
+    }
+
+    .section-title {
+        color: #102A43;
+        font-size: 23px;
+        font-weight: 750;
+        margin-top: 20px;
+        margin-bottom: 12px;
+    }
+
+    .section-description {
+        color: #64748B;
+        font-size: 13px;
+        margin-bottom: 15px;
+    }
+
+    .info-label {
+        color: #64748B;
+        font-size: 12px;
+        font-weight: 650;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-value {
+        color: #102A43;
+        font-size: 16px;
+        font-weight: 650;
+        margin-top: 5px;
+        margin-bottom: 16px;
+    }
+
+    .footer-text {
+        text-align: center;
+        color: #94A3B8;
+        font-size: 12px;
+        padding: 20px 0;
+    }
+
+    div[data-testid="stMetric"] {
+        background: white;
+        border: 1px solid #E2E8F0;
+        padding: 18px;
+        border-radius: 13px;
+    }
+
+    div[data-testid="stExpander"] {
+        border: 1px solid #DCE5ED;
+        border-radius: 12px;
+        background: white;
+    }
+
+    div.stButton > button {
+        border-radius: 9px;
+        font-weight: 600;
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
+
+    # --------------------------------------------------------
+    # PATIENT SIDEBAR
+    # --------------------------------------------------------
+
+    patient_name = (
+        profile.get("patient_name", "Patient")
+        if profile else "Patient"
+    )
+
+    with st.sidebar:
+
+        st.markdown("""
+        <div style="padding:10px 0 15px 0;">
+            <h2 style="color:#0F766E;margin-bottom:0;">
+                MediSimplify AI
+            </h2>
+            <p style="color:#64748B;font-size:12px;">
+                PERSONAL HEALTHCARE PORTAL
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.divider()
+
+        st.markdown("### Patient Account")
+
+        st.write(f"**{current_user.get('username', 'Patient')}**")
+
+        st.caption("Patient Access")
+
+        st.divider()
+
+        st.markdown("### My Dashboard")
+
+        st.markdown("""
+        <div style="padding:8px 0;color:#0F766E;font-weight:650;">
+            🏠 Overview
+        </div>
+        <div style="padding:8px 0;color:#64748B;">
+            👤 Personal Information
+        </div>
+        <div style="padding:8px 0;color:#64748B;">
+            〰️ Health Information
+        </div>
+        <div style="padding:8px 0;color:#64748B;">
+            📄 Medical Reports
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.divider()
+
+        st.caption("Your medical information is private.")
+
+        if st.button("Logout", width="stretch"):
+            st.session_state.clear()
+            st.rerun()
+
+    # --------------------------------------------------------
+    # HANDLE MISSING PROFILE
+    # --------------------------------------------------------
+
+    if not profile:
+
+        st.error(
+            "Your patient profile could not be found. "
+            "Please contact the administrator."
+        )
+
+        st.stop()
+
+    # --------------------------------------------------------
+    # WELCOME BANNER
+    # --------------------------------------------------------
+
+    first_name = patient_name.split()[0]
+
+    st.markdown(
+        f"""
+        <div class="patient-banner">
+            <h1>Welcome back, {first_name}!</h1>
+            <p>
+                Your personal healthcare dashboard.
+                Manage and understand your medical information
+                in one convenient place.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.caption("MEDISIMPLIFY AI  /  PATIENT DASHBOARD")
+
+    # --------------------------------------------------------
+    # HEALTH OVERVIEW
+    # --------------------------------------------------------
+
+    st.markdown(
+        '<div class="section-title">Health Overview</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="section-description">'
+        'A quick overview of your available health records.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    metric1, metric2, metric3, metric4 = st.columns(4)
+
+    with metric1:
+        st.metric(
+            "Medical Reports",
+            len(reports) if reports else 0
+        )
+
+    with metric2:
+        st.metric(
+            "Vital Records",
+            len(vitals) if vitals else 0
+        )
+
+    with metric3:
+        st.metric(
+            "Blood Group",
+            profile.get("blood_group") or "Not provided"
+        )
+
+    with metric4:
+        st.metric(
+            "Age",
+            profile.get("age") or "Not provided"
+        )
+
+    st.divider()
+
+    # --------------------------------------------------------
+    # PERSONAL INFORMATION
+    # --------------------------------------------------------
+
+    st.markdown(
+        '<div class="section-title">Personal Information</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="section-description">'
+        'Your registered patient profile.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    with st.container(border=True):
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+
+            st.markdown("**Full Name**")
+
+            st.write(
+                profile.get("patient_name") or "Not provided"
+            )
+
+            st.markdown("**Age**")
+
+            st.write(
+                profile.get("age") or "Not provided"
+            )
+
+        with col2:
+
+            st.markdown("**Gender**")
+
+            st.write(
+                profile.get("gender") or "Not provided"
+            )
+
+            st.markdown("**Blood Group**")
+
+            st.write(
+                profile.get("blood_group") or "Not provided"
+            )
+
+        with col3:
+
+            st.markdown("**Hospital**")
+
+            st.write(
+                profile.get("hospital_name") or "Not provided"
+            )
+
+            st.markdown("**Emergency Contact**")
+
+            st.write(
+                profile.get("emergency_contact") or "Not provided"
+            )
+
+    # --------------------------------------------------------
+    # MEDICAL INFORMATION
+    # --------------------------------------------------------
+
+    st.markdown(
+        '<div class="section-title">Medical Information</div>',
+        unsafe_allow_html=True
+    )
+
+    with st.container(border=True):
+
+        st.markdown("**Known Allergies**")
+
+        st.write(
+            profile.get("allergies") or "Not provided"
+        )
+
+        st.divider()
+
+        st.markdown("**Medical History**")
+
+        st.write(
+            profile.get("medical_history") or "Not provided"
+        )
+
+        st.divider()
+
+        st.markdown("**Current Medications**")
+
+        st.write(
+            profile.get("current_medications") or "Not provided"
+        )
+
+        st.divider()
+
+        st.markdown("**Past Surgeries**")
+
+        st.write(
+            profile.get("past_surgeries") or "Not provided"
+        )
+
+    # --------------------------------------------------------
+    # VITAL SIGNS
+    # --------------------------------------------------------
+
+    st.markdown(
+        '<div class="section-title">Vital Signs</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="section-description">'
+        'Your recorded vital sign measurements.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    with st.container(border=True):
+
+        if vitals:
+
+            st.dataframe(
+                vitals,
+                width="stretch",
+                hide_index=True
+            )
+
+        else:
+
+            st.info(
+                "No vital signs have been recorded yet."
+            )
+
+            st.caption(
+                "Your recorded measurements will appear here."
+            )
+
+    # --------------------------------------------------------
+    # MEDICAL REPORTS
+    # --------------------------------------------------------
+
+    st.markdown(
+        '<div class="section-title">My Medical Reports</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="section-description">'
+        'Access your uploaded medical reports and AI explanations.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    if reports:
+
+        for report in reports:
+
+            report_name = (
+                report.get("file_name")
+                or "Medical Report"
+            )
+
+            with st.expander(
+                f"📄 Report {report['report_id']} - {report_name}"
+            ):
+
+                report_col1, report_col2 = st.columns(2)
+
+                with report_col1:
+
+                    st.markdown("**Report Date**")
+
+                    st.write(
+                        report.get("report_date") or "Not provided"
+                    )
+
+                with report_col2:
+
+                    st.markdown("**Hospital**")
+
+                    st.write(
+                        report.get("hospital_name") or "Not provided"
+                    )
+
+                st.divider()
+
+                st.markdown("### Extracted Report Text")
+
+                st.text(
+                    report.get("extracted_text")
+                    or "No extracted report text available."
+                )
+
+                st.divider()
+
+                st.markdown("### AI-Generated Explanation")
+
+                st.write(
+                    report.get("ai_explanation")
+                    or "No AI explanation available."
+                )
+
+    else:
+
+        with st.container(border=True):
+
+            st.info(
+                "You have not uploaded any medical reports yet."
+            )
+
+            st.write(
+                "Once your reports are processed, "
+                "they will be available in this section."
+            )
+
+    # --------------------------------------------------------
+    # MEDICAL DISCLAIMER
+    # --------------------------------------------------------
+
+    st.divider()
+
+    st.warning(
+        "Medical Disclaimer: MediSimplify AI provides "
+        "AI-generated educational explanations only. "
+        "It does not diagnose diseases or prescribe treatment. "
+        "Always consult a qualified healthcare professional "
+        "before making medical decisions."
+    )
+
+    # --------------------------------------------------------
+    # FOOTER
+    # --------------------------------------------------------
+
+    st.markdown("""
+    <div class="footer-text">
+        MediSimplify AI | Intelligent Healthcare Portal<br>
+        Understand • Learn • Stay Informed
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.stop()
+
+
+
+# ============================================================
 
 # ============================================================
 
@@ -941,13 +1683,22 @@ def navigate_dashboard(destination):
 
 st.sidebar.html(textwrap.dedent("""
 
-    <h2 style="color:#FFFFFF;">🏥 MediSimplify AI</h2>
+    <h2 style="color:#FFFFFF;">MediSimplify AI</h2>
 
     <p style="color:#C5D8E4;">Understand • Learn • Stay Informed</p>
 
     """))
 
 st.sidebar.divider()
+st.sidebar.write(
+    f"Logged in: {current_user.get('username')}"
+)
+
+st.sidebar.caption("Role: Administrator")
+
+if st.sidebar.button("Logout", use_container_width=True):
+    st.session_state.clear()
+    st.rerun()
 
 page = st.sidebar.radio(
 
@@ -961,17 +1712,20 @@ page = st.sidebar.radio(
 
         "📄 Medical Report Analysis",
 
-        "❤️ Health Information",
+        "〰️ Health Information",
 
         "💬 Chat with Report",
 
-        "⚙️ About & Privacy"
+        "⚙️ About & Privacy",
+
+        "Admin User Management",
 
     ],
 
     key="navigation"
 
 )
+st.sidebar.write(f"DEBUG - Selected page: {page!r}")
 
 st.sidebar.divider()
 
@@ -1039,221 +1793,75 @@ st.warning(
 
 if page == "🏠 Dashboard":
 
+    report_count = len(st.session_state.report_history)
+    chat_count = len(st.session_state.chat_history)
+    latest_available = bool(st.session_state.latest_report_text)
+
     st.html(textwrap.dedent("""
-
-    <div class="hero">
-
-        <div class="eyebrow">Understand • Learn • Stay Informed</div>
-
-        <h1>MediSimplify AI</h1>
-
-        <h3>Medical information, made easier to understand.</h3>
-
-        <p>
-
-            Turn complex medical reports into clear, structured explanations.
-
-            Explore your health information and prepare better questions
-
-            for your healthcare professional.
-
-        </p>
-
+    <div class="dashboard-hero">
+      <div class="dashboard-hero-copy">
+        <div class="dashboard-eyebrow">YOUR PERSONAL HEALTH WORKSPACE</div>
+        <h1>Understand your health.<br><span>One report at a time.</span></h1>
+        <p>Make medical information easier to understand with clear report explanations, medicine guidance and a place to ask questions.</p>
+        <div class="dashboard-trust">✦ AI-assisted explanations &nbsp; · &nbsp; Your health information, organised</div>
+      </div>
+      <div class="dashboard-hero-art">
+        <div class="dashboard-orbit orbit-one"></div>
+        <div class="dashboard-orbit orbit-two"></div>
+        <div class="dashboard-medical-icon">✚</div>
+        <div class="dashboard-float-card float-top">✦ &nbsp; Understand reports</div>
+        <div class="dashboard-float-card float-bottom">♡ &nbsp; Stay informed</div>
+      </div>
     </div>
-
     """))
 
-    st.markdown(
+    st.markdown('<div class="dashboard-section-head"><div><div class="section-kicker">OVERVIEW</div><h3>Your health workspace</h3><p>Here’s a quick look at your activity in this session.</p></div></div>', unsafe_allow_html=True)
 
-        '<div class="section-kicker">Your workspace</div>',
+    m1, m2, m3 = st.columns(3)
+    with m1:
+        st.metric("Reports analysed", report_count, help="Reports analysed in this active session.")
+    with m2:
+        st.metric("Latest report", "Ready" if latest_available else "Not uploaded", help="Availability of your latest report explanation.")
+    with m3:
+        st.metric("Chat messages", chat_count, help="Messages in your current report chat.")
 
-        unsafe_allow_html=True
+    st.markdown('<div class="dashboard-section-head"><div><div class="section-kicker">EXPLORE SERVICES</div><h3>What would you like to do today?</h3><p>Choose a service to continue.</p></div></div>', unsafe_allow_html=True)
 
-    )
-
-    st.subheader("Welcome to your health information hub")
-
-    st.write(
-
-        "Choose a tool below to get started. Your information is "
-
-        "kept within the current app session."
-
-    )
-
-    dashboard_cards = [
-
-        (
-
-            "📄",
-
-            "Medical Report Analysis",
-
-            "Upload a PDF or image and receive a clear explanation.",
-
-            "📄 Medical Report Analysis"
-
-        ),
-
-        (
-
-            "💊",
-
-            "Medicine Information",
-
-            "Explore general uses, side effects and precautions.",
-
-            "📄 Medical Report Analysis"
-
-        ),
-
-        (
-
-            "💬",
-
-            "Chat with Your Report",
-
-            "Ask questions about your latest report explanation.",
-
-            "💬 Chat with Report"
-
-        ),
-
-        (
-
-            "👤",
-
-            "Patient Information",
-
-            "Organise basic details and relevant medical history.",
-
-            "👤 Patient Information"
-
-        ),
-
-        (
-
-            "❤️",
-
-            "Health Information",
-
-            "Review BMI, lifestyle details and vital signs.",
-
-            "❤️ Health Information"
-
-        ),
-
-        (
-
-            "📥",
-
-            "Downloadable Reports",
-
-            "View and download your analysed reports.",
-
-            "📄 Medical Report Analysis"
-
-        )
-
+    services = [
+        ("📄", "Medical report analysis", "Upload a PDF or image and get a structured, easy-to-read explanation.", "📄 Medical Report Analysis", "Start analysis", "service-primary"),
+        ("💊", "Medicine information", "Understand general medicine uses, precautions and possible side effects.", "📄 Medical Report Analysis", "Explore medicines", "service-mint"),
+        ("💬", "Chat with your report", "Ask follow-up questions about your latest report explanation.", "💬 Chat with Report", "Open report chat", "service-lilac"),
+        ("👤", "Patient information", "Review your personal details and medical history.", "👤 Patient Information", "View information", "service-blue"),
+        ("〰️", "Health information", "Review health details, BMI and vital signs.", "〰️ Health Information", "View health details", "service-rose"),
+        ("📥", "Downloadable reports", "Return to your analysed report and available export options.", "📄 Medical Report Analysis", "View reports", "service-sand"),
     ]
 
     for row_index in range(2):
-
-        columns = st.columns(3)
-
-        for column, card in zip(
-
-            columns,
-
-            dashboard_cards[row_index * 3:(row_index + 1) * 3]
-
-        ):
-
-            with column:
-
-                st.html(textwrap.dedent(f"""
-
-                <div class="feature-card">
-
-                    <div style="font-size:1.55rem;margin-bottom:10px">
-
-                        {card[0]}
-
-                    </div>
-
-                    <h4>{card[1]}</h4>
-
-                    <p>{card[2]}</p>
-
+        cols = st.columns(3, gap="medium")
+        for col, item in zip(cols, services[row_index * 3:(row_index + 1) * 3]):
+            icon, title, description, target, action, style = item
+            with col:
+                st.html(f"""
+                <div class="service-tile {style}">
+                  <div class="service-icon">{icon}</div>
+                  <div class="service-title">{title}</div>
+                  <div class="service-description">{description}</div>
                 </div>
-
-                """))
-
+                """)
                 st.button(
-
-                    f"Open {card[1]} →",
-
-                    key=f"dashboard_open_{row_index}_{card[1]}",
-
+                    action + "  →",
+                    key=f"dashboard_service_{row_index}_{title}",
                     width="stretch",
-
                     on_click=navigate_dashboard,
-
-                    args=(card[3],)
-
+                    args=(target,)
                 )
 
-    st.markdown(
-
-        '<div class="section-kicker">Session overview</div>',
-
-        unsafe_allow_html=True
-
-    )
-
-    st.subheader("Your activity")
-
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-
-        st.metric(
-
-            "Reports analysed",
-
-            len(st.session_state.report_history)
-
-        )
-
-    with col2:
-
-        st.metric(
-
-            "Latest report",
-
-            "Available" if st.session_state.latest_report_text else "Not yet"
-
-        )
-
-    with col3:
-
-        st.metric(
-
-            "Chat messages",
-
-            len(st.session_state.chat_history)
-
-        )
-
-    st.caption(
-
-        "Your report history is temporary and limited to the current "
-
-        "Streamlit session."
-
-    )
-
-# ============================================================
+    st.html("""
+    <div class="dashboard-bottom-note">
+      <div class="bottom-note-icon">ⓘ</div>
+      <div><strong>A helpful reminder</strong><p>MediSimplify AI provides educational explanations only. Always discuss medical findings and treatment decisions with a qualified healthcare professional.</p></div>
+    </div>
+    """)
 
 # PATIENT INFORMATION
 
@@ -1443,9 +2051,9 @@ elif page == "👤 Patient Information":
 
 # ============================================================
 
-elif page == "❤️ Health Information":
+elif page == "〰️ Health Information":
 
-    st.title("❤️ Health Information")
+    st.title("〰️ Health Information")
 
     st.write(
 
@@ -1715,36 +2323,140 @@ elif page == "❤️ Health Information":
 
 elif page == "📄 Medical Report Analysis":
 
-    st.title("📄 Medical Report Analysis")
+    # --------------------------------------------------------
+    # MEDICAL REPORT PAGE DESIGN
+    # --------------------------------------------------------
 
-    st.write(
+    st.markdown("""
+    <style>
+    .report-hero {
+        background: linear-gradient(120deg, #102B46 0%, #164B61 62%, #087F8C 100%);
+        border-radius: 22px;
+        padding: 32px 36px;
+        color: #FFFFFF;
+        margin: 4px 0 22px 0;
+        box-shadow: 0 12px 30px rgba(16, 43, 70, .12);
+    }
+    .report-hero .eyebrow {
+        color: #9BE7E0;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+    .report-hero h1 {
+        color: #FFFFFF !important;
+        font-size: clamp(28px, 4vw, 38px);
+        margin: 0 0 9px 0;
+        font-weight: 800;
+    }
+    .report-hero p {
+        color: #E1F1F4;
+        margin: 0;
+        max-width: 760px;
+        line-height: 1.65;
+    }
+    .report-step {
+        background: #FFFFFF;
+        border: 1px solid #DCE8ED;
+        border-radius: 15px;
+        padding: 16px 18px;
+        min-height: 104px;
+        box-shadow: 0 4px 14px rgba(16,43,70,.035);
+    }
+    .report-step .step-number {
+        color: #087F8C;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    .report-step h4 {
+        color: #102B46;
+        font-size: 16px;
+        margin: 5px 0;
+    }
+    .report-step p {
+        color: #718096;
+        font-size: 13px;
+        margin: 0;
+        line-height: 1.5;
+    }
+    .report-section-label {
+        color: #087F8C;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin: 8px 0 5px 0;
+    }
+    div[data-testid="stFileUploader"] {
+        background: #F1FAFA;
+        border: 1.5px dashed #78BFC1;
+        border-radius: 15px;
+        padding: 12px;
+    }
+    div[data-testid="stProgress"] > div > div {
+        background-color: #087F8C;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-        "Upload a medical report PDF to receive an AI-generated "
+    st.markdown("""
+    <div class="report-hero">
+        <div class="eyebrow">AI-powered document understanding</div>
+        <h1>Medical Report Analysis</h1>
+        <p>Turn complex laboratory and medical documents into clear,
+        structured explanations. Upload a PDF or image, review the extracted
+        text, and generate an educational explanation to discuss with your
+        healthcare professional.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-        "explanation in simple English."
+    step1, step2, step3 = st.columns(3)
+    with step1:
+        st.markdown("""
+        <div class="report-step">
+            <div class="step-number">Step 01</div>
+            <h4>Upload document</h4>
+            <p>Select a PDF, scanned PDF, JPG or PNG medical report.</p>
+        </div>
+        """, unsafe_allow_html=True)
+    with step2:
+        st.markdown("""
+        <div class="report-step">
+            <div class="step-number">Step 02</div>
+            <h4>Extract and review</h4>
+            <p>Text extraction and Gemini OCR read the document.</p>
+        </div>
+        """, unsafe_allow_html=True)
+    with step3:
+        st.markdown("""
+        <div class="report-step">
+            <div class="step-number">Step 03</div>
+            <h4>Understand results</h4>
+            <p>Review the explanation and download a copy.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    )
+    st.markdown('<div class="report-section-label">Document upload</div>',
+                unsafe_allow_html=True)
 
     with st.container(border=True):
 
-        st.subheader("Upload your report")
+        st.subheader("Upload your medical report")
+        st.caption("Supported formats: PDF, JPG, JPEG and PNG. "
+                   "Scanned documents and images are processed using Gemini OCR.")
 
         uploaded_file = st.file_uploader(
-
             "Choose your medical report",
-
             type=["pdf", "jpg", "jpeg", "png"],
-
             key="medical_pdf",
-
             help=(
-
                 "Upload a text PDF, scanned PDF, or a JPG/JPEG/PNG image. "
-
                 "Scanned pages and images are read using Gemini OCR."
-
             )
-
         )
 
     extracted_text = ""
@@ -2305,6 +3017,8 @@ doctor or pharmacist.
 
         st.divider()
 
+        st.markdown('<div class="report-section-label">Analysis results</div>',
+                    unsafe_allow_html=True)
         st.subheader("📋 Your AI Report Explanation")
 
         display_organized_report(
@@ -2315,6 +3029,8 @@ doctor or pharmacist.
 
         st.divider()
 
+        st.markdown('<div class="report-section-label">Export</div>',
+                    unsafe_allow_html=True)
         st.subheader("📥 Download Your Report")
 
         col1, col2 = st.columns(2)
@@ -2365,6 +3081,8 @@ doctor or pharmacist.
 
     st.divider()
 
+    st.markdown('<div class="report-section-label">Previous analyses</div>',
+                unsafe_allow_html=True)
     st.subheader("📚 Recent Report History")
 
     if st.session_state.report_history:
@@ -2409,71 +3127,169 @@ doctor or pharmacist.
 
 elif page == "💬 Chat with Report":
 
-    st.title("💬 Chat with Your Medical Report")
+    # --------------------------------------------------------
+    # CHAT PAGE DESIGN
+    # --------------------------------------------------------
 
-    st.write(
+    st.markdown("""
+    <style>
+    .chat-hero {
+        background: linear-gradient(120deg, #102B46 0%, #164B61 62%, #087F8C 100%);
+        border-radius: 22px;
+        padding: 30px 34px;
+        color: #FFFFFF;
+        margin: 4px 0 22px 0;
+        box-shadow: 0 12px 30px rgba(16, 43, 70, .12);
+    }
+    .chat-hero .eyebrow {
+        color: #9BE7E0;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 9px;
+    }
+    .chat-hero h1 {
+        color: #FFFFFF !important;
+        font-size: clamp(27px, 4vw, 36px);
+        margin: 0 0 8px 0;
+        font-weight: 800;
+    }
+    .chat-hero p {
+        color: #E1F1F4;
+        margin: 0;
+        max-width: 760px;
+        line-height: 1.65;
+    }
+    .chat-info-card {
+        background: #FFFFFF;
+        border: 1px solid #DCE8ED;
+        border-radius: 15px;
+        padding: 17px 19px;
+        box-shadow: 0 4px 14px rgba(16,43,70,.035);
+        min-height: 112px;
+    }
+    .chat-info-card h4 {
+        color: #102B46;
+        margin: 0 0 6px 0;
+        font-size: 16px;
+    }
+    .chat-info-card p {
+        color: #718096;
+        font-size: 13px;
+        line-height: 1.5;
+        margin: 0;
+    }
+    .chat-label {
+        color: #087F8C;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin: 8px 0 5px 0;
+    }
+    [data-testid="stChatMessage"] {
+        background: #FFFFFF;
+        border: 1px solid #E1EAF0;
+        border-radius: 15px;
+        padding: 12px 15px;
+        margin-bottom: 10px;
+    }
+    [data-testid="stChatInput"] {
+        border-color: #9CCFD0;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-        "Ask questions about your latest AI-generated report explanation."
+    st.markdown("""
+    <div class="chat-hero">
+        <div class="eyebrow">Ask • Understand • Prepare</div>
+        <h1>Chat with Your Report</h1>
+        <p>Ask questions about your latest AI-generated report explanation.
+        Get plain-language clarification and prepare useful questions
+        for your healthcare professional.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    )
+    info_col1, info_col2 = st.columns(2)
+    with info_col1:
+        st.markdown("""
+        <div class="chat-info-card">
+            <h4>Report-based answers</h4>
+            <p>Responses use the latest report explanation available
+            in this session. If the report does not contain an answer,
+            the assistant should say so.</p>
+        </div>
+        """, unsafe_allow_html=True)
+    with info_col2:
+        st.markdown("""
+        <div class="chat-info-card">
+            <h4>Educational support</h4>
+            <p>Use the conversation to understand terminology and
+            prepare questions. It cannot diagnose conditions or
+            replace advice from your healthcare professional.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown('<div class="chat-label">Your conversation</div>',
+                unsafe_allow_html=True)
 
     if not st.session_state.latest_report_text:
 
-        st.info(
-
-            "Please analyse a medical report first to use this feature."
-
-        )
+        with st.container(border=True):
+            st.info(
+                "No analysed report is available yet. Open Medical Report "
+                "Analysis, upload a report and generate its explanation "
+                "before starting a conversation here."
+            )
+            if st.button(
+                "Go to Medical Report Analysis",
+                key="chat_go_to_analysis",
+                type="primary",
+                width="stretch"
+            ):
+                st.session_state["navigation"] = "📄 Medical Report Analysis"
+                st.rerun()
 
     else:
 
-        for message in st.session_state.chat_history:
+        with st.container(border=True):
 
-            with st.chat_message(message["role"]):
+            st.caption("Conversation context: your latest analysed report")
 
-                st.markdown(message["content"])
+            for message in st.session_state.chat_history:
+                with st.chat_message(message["role"]):
+                    st.markdown(message["content"])
 
-        user_question = st.chat_input(
+            user_question = st.chat_input(
+                "Ask a question about your report..."
+            )
 
-            "Ask a question about your report..."
+            if user_question:
 
-        )
+                st.session_state.chat_history.append({
+                    "role": "user",
+                    "content": user_question
+                })
 
-        if user_question:
+                with st.chat_message("user"):
+                    st.markdown(user_question)
 
-            st.session_state.chat_history.append({
-
-                "role": "user",
-
-                "content": user_question
-
-            })
-
-            with st.chat_message("user"):
-
-                st.markdown(user_question)
-
-            chat_prompt = f"""
-
+                chat_prompt = f"""
 You are MediSimplify AI.
 
 Answer the user's question using the report explanation below.
 
 Rules:
-
 1. Use simple English.
-
 2. Do not diagnose diseases.
-
 3. Do not prescribe medication.
-
 4. Do not recommend stopping or changing medicines.
-
 5. If the report does not contain the answer, say so.
-
 6. Encourage consultation with a qualified healthcare professional.
-
 7. Do not claim that the report rules out a medical emergency.
+8. Distinguish information stated in the report from general educational context.
+9. Do not invent test values, reference ranges or patient details.
 
 REPORT EXPLANATION:
 
@@ -2482,38 +3298,58 @@ REPORT EXPLANATION:
 USER QUESTION:
 
 {user_question}
-
 """
 
-            try:
+                try:
 
-                with st.chat_message("assistant"):
+                    with st.chat_message("assistant"):
 
-                    with st.spinner("Preparing your answer..."):
+                        with st.spinner("Preparing your answer..."):
 
-                        chat_response = client.models.generate_content(model=GEMINI_MODEL, contents=chat_prompt)
+                            chat_response = client.models.generate_content(
+                                model=GEMINI_MODEL,
+                                contents=chat_prompt
+                            )
 
-                        answer = (
+                            answer = (
+                                chat_response.text
+                                or "I could not generate an answer. Please try again."
+                            )
 
-                            chat_response.text
+                        st.markdown(answer)
 
-                            or "I could not generate an answer. Please try again."
+                    st.session_state.chat_history.append({
+                        "role": "assistant",
+                        "content": answer
+                    })
 
-                        )
+                except Exception as error:
+                    st.error(f"Chat Error: {error}")
 
-                    st.markdown(answer)
+        col_clear, col_note = st.columns([1, 2])
 
-                st.session_state.chat_history.append({
+        with col_clear:
+            if st.button(
+                "Clear conversation",
+                key="clear_report_chat",
+                width="stretch"
+            ):
+                st.session_state.chat_history = []
+                st.rerun()
 
-                    "role": "assistant",
+        with col_note:
+            st.caption(
+                "Clearing the conversation does not delete your analysed report."
+            )
 
-                    "content": answer
+    st.divider()
 
-                })
-
-            except Exception as error:
-
-                st.error(f"Chat Error: {error}")
+    st.warning(
+        "Medical safety: Chat responses are AI-generated educational "
+        "information. They may be incomplete or inaccurate. Do not use "
+        "them to make treatment decisions or delay urgent care. Contact "
+        "a qualified healthcare professional for medical advice."
+    )
 
 # ============================================================
 
@@ -2522,94 +3358,254 @@ USER QUESTION:
 # ============================================================
 
 elif page == "⚙️ About & Privacy":
+    st.markdown("""
+    <div class="page-hero">
+        <div class="hero-eyebrow">MEDISIMPLIFY AI</div>
+        <h1>About & Privacy</h1>
+        <p>Clearer medical information, with transparency about how this application works.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.title("⚙️ About MediSimplify AI")
-
-    st.subheader("About the Project")
-
+    st.markdown("### About the project")
     st.write(
-
-        "MediSimplify AI is an AI-powered medical document "
-
-        "intelligence system designed to explain complex medical "
-
-        "reports in simple and understandable language."
-
+        "MediSimplify AI is an educational medical-document assistant. "
+        "It uses generative AI to help explain medical terms and report findings "
+        "in simpler language. It does not diagnose conditions or replace a clinician."
     )
 
-    st.subheader("Technology Used")
+    st.markdown("### How it works")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("**01 · Upload**")
+        st.caption("Choose a supported medical report or document.")
+    with col2:
+        st.markdown("**02 · Analyse**")
+        st.caption("Text is extracted and sent to the configured AI service for explanation.")
+    with col3:
+        st.markdown("**03 · Understand**")
+        st.caption("Review the explanation, ask questions, and use available export options.")
 
+    st.divider()
+    st.markdown("### Technology")
+    tech_cols = st.columns(2)
+    with tech_cols[0]:
+        st.markdown("- Python")
+        st.markdown("- Streamlit")
+        st.markdown("- Google Gemini API")
+    with tech_cols[1]:
+        st.markdown("- PyMuPDF and Pillow")
+        st.markdown("- MySQL database functions")
+        st.markdown("- ReportLab PDF generation")
+
+    st.divider()
+    st.markdown("### Privacy & data handling")
     st.markdown("""
-
-    - **Python:** Main programming language.
-
-    - **Streamlit:** User interface and application framework.
-
-    - **Google Gemini:** Generative AI for report explanations.
-
-    - **PyMuPDF:** Extracts PDF text and renders scanned PDF pages.\n\n    - **Gemini Vision OCR:** Reads scanned PDF pages and JPG/PNG images.
-
-    - **ReportLab:** Generates downloadable PDF reports.
-
+    - Uploaded report content may be sent to the Google Gemini service configured for this application to perform extraction or analysis.
+    - Temporary analysis text and chat history are held in the active Streamlit session.
+    - Account, profile, and other records shown in the application may be retrieved through the configured MySQL database.
+    - Data retention depends on the database configuration, hosting environment, and applicable service settings.
+    - Avoid uploading unnecessary personal identifiers. Do not use this application with information you are not authorised to share.
+    - Review the privacy terms of the services used by your deployment before uploading sensitive documents.
     """)
 
     st.divider()
-
-    st.subheader("Privacy Information")
-
-    st.markdown("""
-
-    - Patient details and report history are maintained in the
-
-      current Streamlit session.
-
-    - This version does not provide a permanent patient database.
-
-    - Session information may disappear when the session ends
-
-      or is reset.
-
-    - Uploaded report content is sent to the configured AI service
-
-      for analysis.
-
-    - Do not upload information unless you are comfortable with
-
-      the applicable service privacy terms.
-
-    - Avoid uploading unnecessary personal identifiers.
-
-    """)
-
-    st.divider()
-
-    st.subheader("Medical Disclaimer")
-
+    st.markdown("### Medical disclaimer")
     st.warning(
-
-        "This application is an educational information tool. "
-
-        "It is not a substitute for a doctor, laboratory professional "
-
-        "or other qualified healthcare provider. AI-generated content "
-
-        "may be incomplete or inaccurate. Always verify medical "
-
-        "information with a qualified professional."
-
+        "MediSimplify AI is for educational purposes only. AI-generated explanations "
+        "can be incomplete or incorrect and must not be used for diagnosis, treatment, "
+        "or emergencies. Always confirm results and medical decisions with a qualified "
+        "healthcare professional."
     )
 
     st.divider()
-
-    st.subheader("Developer")
-
+    st.markdown("### Developer")
     st.write("MediSimplify AI")
-
     st.caption("Understand • Learn • Stay Informed")
-
     st.markdown("**Developed by Mukesh**")
 
+
 # ============================================================
+# ADMIN USER MANAGEMENT
+# ============================================================
+
+if page == "Admin User Management":
+
+    st.markdown("""
+    <div class="page-hero admin-user-hero">
+        <div class="hero-eyebrow">ADMINISTRATION</div>
+        <h1>User Management</h1>
+        <p>Create accounts, manage access, and connect patients with doctors.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    users = database.get_all_users()
+    patients = database.get_patients()
+
+    total_users = len(users) if users else 0
+    active_users = sum(1 for u in users if u["is_active"]) if users else 0
+    doctor_count = sum(1 for u in users if u["role"] == "doctor") if users else 0
+    patient_count = sum(1 for u in users if u["role"] == "patient") if users else 0
+
+    metric_cols = st.columns(4)
+    for col, label, value in zip(
+        metric_cols,
+        ["Total accounts", "Active accounts", "Doctors", "Patients"],
+        [total_users, active_users, doctor_count, patient_count]
+    ):
+        with col:
+            st.metric(label, value)
+
+    st.divider()
+    create_col, manage_col = st.columns([1, 1.35], gap="large")
+
+    with create_col:
+        st.markdown("### Create an account")
+        st.caption("Add a doctor or patient login.")
+        with st.form("create_user_form"):
+            username = st.text_input("Username")
+            email = st.text_input("Email address")
+            role = st.selectbox("Account role", ["doctor", "patient"])
+
+            patient_options = {
+                f'{p["patient_name"]} (ID: {p["patient_id"]})': p["patient_id"]
+                for p in patients
+            }
+            selected_patient = None
+            if role == "patient":
+                if patient_options:
+                    selected_patient = st.selectbox(
+                        "Link patient record", list(patient_options.keys())
+                    )
+                else:
+                    st.warning("Create a patient record before creating a Patient account.")
+
+            password = st.text_input("Temporary password", type="password")
+            confirm_password = st.text_input("Confirm password", type="password")
+            submitted = st.form_submit_button("Create account", use_container_width=True)
+
+            if submitted:
+                if not username.strip() or not email.strip():
+                    st.error("Username and email are required.")
+                elif len(password) < 12:
+                    st.error("Password must contain at least 12 characters.")
+                elif password != confirm_password:
+                    st.error("Passwords do not match.")
+                elif role == "patient" and not selected_patient:
+                    st.error("Please select a patient record.")
+                else:
+                    patient_id = patient_options[selected_patient] if role == "patient" else None
+                    new_user_id = database.create_user(
+                        username=username.strip(),
+                        email=email.strip().lower(),
+                        password=password,
+                        role=role,
+                        patient_id=patient_id
+                    )
+                    if new_user_id:
+                        st.success(f"{role.title()} account created. User ID: {new_user_id}")
+                        st.rerun()
+                    else:
+                        st.error("Account creation failed. The username or email may already exist.")
+
+    with manage_col:
+        st.markdown("### Registered accounts")
+        st.caption("Review account details and current access status.")
+        if users:
+            st.dataframe(
+                [
+                    {
+                        "ID": u["user_id"],
+                        "Username": u["username"],
+                        "Email": u["email"],
+                        "Role": u["role"].title(),
+                        "Patient ID": u["patient_id"],
+                        "Status": "Active" if u["is_active"] else "Inactive"
+                    }
+                    for u in users
+                ],
+                use_container_width=True,
+                hide_index=True
+            )
+        else:
+            st.info("No registered accounts found.")
+
+    st.divider()
+    st.markdown("### Account access")
+    st.caption("Activate or deactivate accounts. Your own account and the last active admin are protected.")
+
+    if users:
+        active_admins = [
+            u for u in users if u["role"] == "admin" and u["is_active"]
+        ]
+        for user in users:
+            left, middle, right = st.columns([3, 2, 1.5])
+            with left:
+                st.markdown(f'**{user["username"]}**')
+                st.caption(f'{user["role"].title()} · ID {user["user_id"]}')
+            with middle:
+                status = "Active" if user["is_active"] else "Inactive"
+                st.markdown(f'`{status}`')
+            with right:
+                is_self = user["user_id"] == current_user["user_id"]
+                is_last_admin = (
+                    user["role"] == "admin"
+                    and user["is_active"]
+                    and len(active_admins) <= 1
+                )
+                if is_self:
+                    st.caption("Current account")
+                elif is_last_admin:
+                    st.caption("Last active admin")
+                else:
+                    button_label = "Deactivate" if user["is_active"] else "Activate"
+                    if st.button(button_label, key=f'user_status_{user["user_id"]}'):
+                        success = database.update_user_status(
+                            user["user_id"], not bool(user["is_active"])
+                        )
+                        if success:
+                            st.success("Account status updated.")
+                            st.rerun()
+                        else:
+                            st.error("Could not update account.")
+
+    st.divider()
+    st.markdown("### Doctor–patient assignments")
+    st.caption("Link an existing patient record to an active doctor.")
+
+    all_users = database.get_all_users()
+    doctors = [
+        user for user in all_users
+        if user["role"] == "doctor" and user["is_active"]
+    ]
+    patients = database.get_patients()
+
+    if not doctors:
+        st.info("Create an active Doctor account first.")
+    elif not patients:
+        st.info("Add patient records before assigning them.")
+    else:
+        doctor_options = {
+            f'{doctor["username"]} (ID: {doctor["user_id"]})': doctor["user_id"]
+            for doctor in doctors
+        }
+        patient_options = {
+            f'{patient["patient_name"]} (ID: {patient["patient_id"]})': patient["patient_id"]
+            for patient in patients
+        }
+        with st.form("assign_patient_form"):
+            selected_doctor = st.selectbox("Select doctor", list(doctor_options.keys()))
+            selected_patient = st.selectbox("Select patient", list(patient_options.keys()))
+            assign_submitted = st.form_submit_button("Assign patient", use_container_width=True)
+            if assign_submitted:
+                success = database.assign_patient_to_doctor(
+                    doctor_options[selected_doctor],
+                    patient_options[selected_patient]
+                )
+                if success:
+                    st.success("Patient assigned successfully.")
+                    st.rerun()
+                else:
+                    st.error("Assignment failed. This patient may already be assigned to this doctor.")
 
 # FOOTER
 
@@ -2621,7 +3617,7 @@ st.html(textwrap.dedent("""
 
 <div class="footer">
 
-    <h4 style="color:#087F8C;">🏥 MediSimplify AI</h4>
+    <h4 style="color:#087F8C;">MediSimplify AI</h4>
 
     <p>Understand • Learn • Stay Informed</p>
 
