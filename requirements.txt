@@ -71,4 +71,5 @@ websockets==16.0
 PyMuPDF==2.1
 google-genai==3.6.1
 mysql-connector-python
+bcrypt
 
