@@ -26,6 +26,10 @@ def _setting(name, default=None):
 
 
 def connect_db():
+        print("DEBUG: DB_USER found:", bool(_setting("DB_USER")))
+    print("DEBUG: DB_PASSWORD found:", bool(_setting("DB_PASSWORD")))
+    print("DEBUG: DB_HOST found:", bool(_setting("DB_HOST")))
+    print("DEBUG: DB_NAME found:", bool(_setting("DB_NAME")))
     try:
         host = _setting("DB_HOST", "localhost")
         port = int(_setting("DB_PORT", "3306"))
