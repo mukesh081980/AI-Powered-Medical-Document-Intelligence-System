@@ -166,59 +166,94 @@ def login_screen():
 
             with sign_in_tab:
 
-                with st.form("login_form"):
+                if st.session_state.get("forgot_password_mode", False):
 
-                    st.subheader("Sign in to your account")
+                    st.subheader("Reset Your Password")
+                    st.write("Enter your registered email address to reset your password.")
 
-                    username = st.text_input(
-                        "Username",
-                        placeholder="Enter your username"
-                    )
+                    with st.form("forgot_password_form"):
 
-                    password = st.text_input(
-                        "Password",
-                        type="password",
-                        placeholder="Enter your password"
-                    )
+                        reset_email = st.text_input(
+                            "Registered Email Address",
+                            placeholder="Enter your registered email"
+                        )
 
-                    submitted = st.form_submit_button(
-                        "Sign In",
-                        width="stretch"
-                    )
+                        reset_submitted = st.form_submit_button(
+                            "Send Reset Link",
+                            width="stretch"
+                        )
 
-                    if submitted:
+                        if reset_submitted:
 
-                        if not username.strip() or not password:
-
-                            st.error(
-                                "Please enter your username and password."
-                            )
-
-                        else:
-
-                            user = database.authenticate_user(
-                                username.strip(),
-                                password
-                            )
-
-                            if user:
-
-                                st.session_state["authenticated"] = True
-                                st.session_state["user"] = user
-                                st.session_state["navigation"] = "🏠 Dashboard"
-
-                                st.success("Login successful!")
-                                st.rerun()
+                            if not reset_email.strip():
+                                st.error("Please enter your email address.")
 
                             else:
-
-                                st.error(
-                                    "Invalid username or password."
+                                token = database.create_password_reset_token(
+                                    reset_email.strip().lower()
                                 )
 
-                st.caption(
-                    "For authorized users only."
-                )
+                                if token:
+                                    st.session_state["reset_token"] = token
+                                    st.success("Reset token generated successfully.")
+                                else:
+                                    st.error("Unable to process this email address.")
+
+                    if st.button("Back to Sign In", key="back_to_sign_in"):
+                        st.session_state["forgot_password_mode"] = False
+                        st.rerun()
+
+                else:
+
+                    with st.form("login_form"):
+
+                        st.subheader("Sign in to your account")
+
+                        username = st.text_input(
+                            "Username",
+                            placeholder="Enter your username"
+                        )
+
+                        password = st.text_input(
+                            "Password",
+                            type="password",
+                            placeholder="Enter your password"
+                        )
+
+                        submitted = st.form_submit_button(
+                            "Sign In",
+                            width="stretch"
+                        )
+
+                        if submitted:
+
+                            if not username.strip() or not password:
+                                st.error(
+                                    "Please enter your username and password."
+                                )
+
+                            else:
+                                user = database.authenticate_user(
+                                    username.strip(),
+                                    password
+                                )
+
+                                if user:
+                                    st.session_state["authenticated"] = True
+                                    st.session_state["user"] = user
+                                    st.session_state["navigation"] = "🏠 Dashboard"
+                                    st.success("Login successful!")
+                                    st.rerun()
+                                else:
+                                    st.error(
+                                        "Invalid username or password."
+                                    )
+
+                    st.caption("For authorized users only.")
+
+                    if st.button("Forgot Password?", key="forgot_password"):
+                        st.session_state["forgot_password_mode"] = True
+                        st.rerun()
 
             # ==================================================
             # PATIENT SIGN UP
