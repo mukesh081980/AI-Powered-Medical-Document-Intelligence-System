@@ -1,8 +1,9 @@
 import database
+import streamlit as st
+import database
+
 st.write("Database module loaded from:", database.__file__)
 st.write("Authentication function available:", hasattr(database, "authenticate_user"))
-
-
 import auth
 
 import streamlit as st
