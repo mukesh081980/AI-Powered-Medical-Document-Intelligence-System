@@ -1,16 +1,13 @@
-
+import hashlib
 import os
+import secrets
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import bcrypt
 import mysql.connector
 import streamlit as st
 from dotenv import load_dotenv
-
-import os
-import mysql.connector
-from dotenv import load_dotenv
-import bcrypt
 
 load_dotenv()
 
@@ -162,7 +159,6 @@ def get_patients():
         cursor.close()
         connection.close()
 
-import bcrypt
 
 
 def create_user(username, email, password, role, patient_id=None):
@@ -709,19 +705,31 @@ def get_active_user(user_id):
         if cursor:
             cursor.close()
         connection.close()
-import secrets
-import hashlib
-from datetime import datetime, timedelta
-
-
 def create_password_reset_token(email):
+    """Create a single-use password-reset token valid for 15 minutes.
+
+    Returns the raw token on success, or None if the database is unavailable
+    or the email does not belong to an active account.
+    """
     conn = connect_db()
-    cursor = conn.cursor(dictionary=True)
+
+    if conn is None:
+        print("Password reset error: database connection is unavailable.")
+        return None
+
+    cursor = None
 
     try:
+        cursor = conn.cursor(dictionary=True)
+
         cursor.execute(
-            "SELECT user_id FROM users WHERE email = %s AND is_active = 1",
-            (email,)
+            """
+            SELECT user_id
+            FROM users
+            WHERE email = %s AND is_active = 1
+            LIMIT 1
+            """,
+            (email.strip().lower(),)
         )
         user = cursor.fetchone()
 
@@ -729,14 +737,14 @@ def create_password_reset_token(email):
             return None
 
         token = secrets.token_urlsafe(32)
-        token_hash = hashlib.sha256(token.encode()).hexdigest()
+        token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
         expires_at = datetime.now() + timedelta(minutes=15)
 
         cursor.execute(
             """
             INSERT INTO password_reset_tokens
-            (user_id, token_hash, expires_at)
-            VALUES (%s, %s, %s)
+                (user_id, token_hash, expires_at, used)
+            VALUES (%s, %s, %s, FALSE)
             """,
             (user["user_id"], token_hash, expires_at)
         )
@@ -744,17 +752,35 @@ def create_password_reset_token(email):
         conn.commit()
         return token
 
+    except mysql.connector.Error as error:
+        conn.rollback()
+        print(f"Password reset token creation error: {error}")
+        return None
+
+    except Exception as error:
+        conn.rollback()
+        print(f"Unexpected password reset error: {error}")
+        return None
+
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
         conn.close()
 
 
 def reset_user_password(token, new_password):
+    """Reset a password using a valid, unused, unexpired token."""
     conn = connect_db()
-    cursor = conn.cursor(dictionary=True)
+
+    if conn is None:
+        print("Password reset error: database connection is unavailable.")
+        return False
+
+    cursor = None
 
     try:
-        token_hash = hashlib.sha256(token.encode()).hexdigest()
+        cursor = conn.cursor(dictionary=True)
+        token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
 
         cursor.execute(
             """
@@ -763,6 +789,8 @@ def reset_user_password(token, new_password):
             WHERE token_hash = %s
               AND expires_at > NOW()
               AND used = FALSE
+            LIMIT 1
+            FOR UPDATE
             """,
             (token_hash,)
         )
@@ -773,30 +801,54 @@ def reset_user_password(token, new_password):
             return False
 
         password_hash = bcrypt.hashpw(
-            new_password.encode(),
+            new_password.encode("utf-8"),
             bcrypt.gensalt()
-        ).decode()
+        ).decode("utf-8")
 
         cursor.execute(
-            "UPDATE users SET password_hash = %s WHERE user_id = %s",
+            """
+            UPDATE users
+            SET password_hash = %s
+            WHERE user_id = %s AND is_active = 1
+            """,
             (password_hash, reset_record["user_id"])
         )
 
+        if cursor.rowcount != 1:
+            conn.rollback()
+            return False
+
         cursor.execute(
-            "UPDATE password_reset_tokens SET used = TRUE WHERE id = %s",
+            """
+            UPDATE password_reset_tokens
+            SET used = TRUE
+            WHERE id = %s AND used = FALSE
+            """,
             (reset_record["id"],)
         )
+
+        if cursor.rowcount != 1:
+            conn.rollback()
+            return False
 
         conn.commit()
         return True
 
-    except Exception:
+    except mysql.connector.Error as error:
         conn.rollback()
-        raise
+        print(f"Password reset error: {error}")
+        return False
+
+    except Exception as error:
+        conn.rollback()
+        print(f"Unexpected password reset error: {error}")
+        return False
 
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
         conn.close()
+
 
 
 
